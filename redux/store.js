@@ -1,23 +1,11 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import {
-  persistStore,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from 'redux-persist';
-import { persistedWordsReducer } from './wordsReducer';
+import { configureStore } from '@reduxjs/toolkit';
+import { wordsAPI } from './wordsAPi';
 
 export const store = configureStore({
-  reducer: persistedWordsReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }),
-});
+  reducer: {
+    [wordsAPI.reducerPath]: wordsAPI.reducer,
+  },
 
-export const persistor = persistStore(store);
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(wordsAPI.middleware),
+});

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   StyleSheet,
   Text,
@@ -9,13 +8,17 @@ import {
   Modal,
   TextInput,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { v4 as uuidv4 } from 'uuid';
 import { isEmpty } from 'lodash';
-import { addWord, removeWord, updateWord } from '../../redux/wordsReducer';
-import { getWords } from '../../redux/selector';
 import { ucFirst } from '../../src/functions/ucFirst';
+import {
+  useGetWordsQuery,
+  useAddWordMutation,
+  useUpdateWordMutation,
+  useDeleteWordMutation,
+} from '../../redux/wordsAPi';
 
 const initialState = {
   word: '',
@@ -23,8 +26,10 @@ const initialState = {
 };
 
 export const VocabularyScreen = () => {
-  const words = useSelector(getWords);
-  const dispatch = useDispatch();
+  const { data: words, isLoading } = useGetWordsQuery();
+  const [addWord] = useAddWordMutation();
+  const [updateWord] = useUpdateWordMutation();
+  const [deleteWord] = useDeleteWordMutation();
   const [newWord, setNewWord] = useState(initialState);
   const [modalVisible, setModalVisible] = useState(false);
   const [action, setAction] = useState('');
@@ -45,117 +50,127 @@ export const VocabularyScreen = () => {
   const handleSubmit = () => {
     setModalVisible(false);
     if (action === 'Add') {
-      dispatch(addWord({ ...newWord, id: uuidv4() }));
+      addWord(newWord);
     } else if (action === 'Update') {
-      dispatch(updateWord(newWord));
+      updateWord(newWord);
     } else if (action === 'Del') {
-      dispatch(removeWord(newWord.id));
+      deleteWord(newWord.id);
     }
     setNewWord(initialState);
   };
 
   return (
     <View style={styles.container}>
-      {isEmpty(words) ? (
-        <View style={styles.noDataFoundCont}>
-          <Image
-            style={styles.noDataFoundImg}
-            source={require('../../image/no-data-found.png')}
-          />
-        </View>
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#00ff00" />
       ) : (
-        <FlatList
-          data={words}
-          renderItem={({ item }) => (
-            <View>
-              <TouchableOpacity
-                style={styles.itemContainer}
-                onPress={() => openModal('Update', item)}
-                onLongPress={() => openModal('Del', item)}
-              >
-                <Text style={styles.itemText}>{ucFirst(item.word)}</Text>
-                <Text style={styles.itemText}>{ucFirst(item.translation)}</Text>
-              </TouchableOpacity>
+        <>
+          {isEmpty(words) ? (
+            <View style={styles.noDataFoundCont}>
+              <Image
+                style={styles.noDataFoundImg}
+                source={require('../../image/no-data-found.png')}
+              />
             </View>
-          )}
-          keyExtractor={(item) => item.id}
-        />
-      )}
-
-      {!modalVisible && (
-        <TouchableOpacity
-          style={styles.openModalBtn}
-          activeOpacity={0.8}
-          onPress={() => openModal('Add')}
-        >
-          <MaterialCommunityIcons
-            name="plus-circle"
-            size={48}
-            color="#4fc87a"
-          />
-        </TouchableOpacity>
-      )}
-      <View>
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              {action === 'Del' ? (
-                <Text>{`Delete "${ucFirst(newWord.word)}"?`}</Text>
-              ) : (
-                <>
-                  <TextInput
-                    style={styles.input}
-                    placeholder={'English'}
-                    placeholderTextColor={'#BDBDBD'}
-                    value={newWord.word}
-                    onChangeText={(value) =>
-                      setNewWord((prevState) => ({ ...prevState, word: value }))
-                    }
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder={'Translation'}
-                    placeholderTextColor={'#BDBDBD'}
-                    value={newWord.translation}
-                    onChangeText={(value) =>
-                      setNewWord((prevState) => ({
-                        ...prevState,
-                        translation: value,
-                      }))
-                    }
-                  />
-                </>
+          ) : (
+            <FlatList
+              data={words}
+              renderItem={({ item }) => (
+                <View>
+                  <TouchableOpacity
+                    style={styles.itemContainer}
+                    onPress={() => openModal('Update', item)}
+                    onLongPress={() => openModal('Del', item)}
+                  >
+                    <Text style={styles.itemText}>{ucFirst(item.word)}</Text>
+                    <Text style={styles.itemText}>
+                      {ucFirst(item.translation)}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               )}
-              <TouchableOpacity
-                style={styles.submitBtn}
-                activeOpacity={0.8}
-                onPress={handleSubmit}
-                disabled={newWord.word === '' || newWord.translation === ''}
-              >
-                <Text style={styles.submitBtnText}>{action}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.closeModalBtn}
-                activeOpacity={0.8}
-                onPress={() => closeModal()}
-              >
-                <MaterialCommunityIcons
-                  name="close-circle"
-                  size={24}
-                  color="#4fc87a"
-                />
-              </TouchableOpacity>
-            </View>
+              keyExtractor={(item) => item.id}
+            />
+          )}
+          {!modalVisible && (
+            <TouchableOpacity
+              style={styles.openModalBtn}
+              activeOpacity={0.8}
+              onPress={() => openModal('Add')}
+            >
+              <MaterialCommunityIcons
+                name="plus-circle"
+                size={48}
+                color="#4fc87a"
+              />
+            </TouchableOpacity>
+          )}
+          <View>
+            <Modal
+              animationType="fade"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  {action === 'Del' ? (
+                    <Text>{`Delete "${ucFirst(newWord.word)}"?`}</Text>
+                  ) : (
+                    <>
+                      <TextInput
+                        style={styles.input}
+                        placeholder={'English'}
+                        placeholderTextColor={'#BDBDBD'}
+                        value={newWord.word}
+                        onChangeText={(value) =>
+                          setNewWord((prevState) => ({
+                            ...prevState,
+                            word: value,
+                          }))
+                        }
+                      />
+                      <TextInput
+                        style={styles.input}
+                        placeholder={'Translation'}
+                        placeholderTextColor={'#BDBDBD'}
+                        value={newWord.translation}
+                        onChangeText={(value) =>
+                          setNewWord((prevState) => ({
+                            ...prevState,
+                            translation: value,
+                          }))
+                        }
+                      />
+                    </>
+                  )}
+                  <TouchableOpacity
+                    style={styles.submitBtn}
+                    activeOpacity={0.8}
+                    onPress={handleSubmit}
+                    disabled={newWord.word === '' || newWord.translation === ''}
+                  >
+                    <Text style={styles.submitBtnText}>{action}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.closeModalBtn}
+                    activeOpacity={0.8}
+                    onPress={() => closeModal()}
+                  >
+                    <MaterialCommunityIcons
+                      name="close-circle"
+                      size={24}
+                      color="#4fc87a"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
           </View>
-        </Modal>
-      </View>
+        </>
+      )}
     </View>
   );
 };
@@ -166,7 +181,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 10,
     marginTop: 40,
-    marginBottom: 50,
+    marginBottom: 60,
   },
   itemContainer: {
     flexDirection: 'row',

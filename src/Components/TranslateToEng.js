@@ -6,19 +6,18 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useSelector } from 'react-redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { getWords } from '../../redux/selector';
 import { getRandomInt } from '../functions/getRandomInt';
+import { useGetWordsQuery } from '../../redux/wordsAPi';
 
 export const TranslateToEng = () => {
+  const { data: words } = useGetWordsQuery();
   const [int, setInt] = useState(0);
   const [answer, setAnswer] = useState('');
   const [chekAnswer, setCheckAnswer] = useState('');
   const [btnText, setBtnText] = useState('');
   const [correctAnswer, setCorrectAnswer] = useState(false);
   const [disabled, setDisabled] = useState(true);
-  const words = useSelector(getWords);
 
   useEffect(() => {
     textBtn();
@@ -41,7 +40,7 @@ export const TranslateToEng = () => {
   };
 
   const checkUserAnswer = () => {
-    answer === words[int].word
+    answer.toLowerCase() === words[int].word
       ? setCheckAnswer('Ok')
       : setCheckAnswer('Mistake');
     setBtnText('Next');
