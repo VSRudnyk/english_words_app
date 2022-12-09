@@ -40,7 +40,7 @@ export const TranslateToEng = () => {
   };
 
   const checkUserAnswer = () => {
-    answer.toLowerCase() === words[int].word
+    answer.toLowerCase() === words[int].word.toLowerCase()
       ? setCheckAnswer('Ok')
       : setCheckAnswer('Mistake');
     setBtnText('Next');
