@@ -50,9 +50,16 @@ export const VocabularyScreen = () => {
   const handleSubmit = () => {
     setModalVisible(false);
     if (action === 'Add') {
-      addWord(newWord);
+      addWord({
+        word: newWord.word.toLowerCase().trim(),
+        translation: newWord.translation.toLowerCase().trim(),
+      });
     } else if (action === 'Update') {
-      updateWord(newWord);
+      updateWord({
+        id: newWord.id,
+        word: newWord.word.toLowerCase().trim(),
+        translation: newWord.translation.toLowerCase().trim(),
+      });
     } else if (action === 'Del') {
       deleteWord(newWord.id);
     }

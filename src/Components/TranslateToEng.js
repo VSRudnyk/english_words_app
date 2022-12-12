@@ -40,7 +40,7 @@ export const TranslateToEng = () => {
   };
 
   const checkUserAnswer = () => {
-    answer.toLowerCase() === words[int].word.toLowerCase()
+    answer.toLowerCase().trim() === words[int].word
       ? setCheckAnswer('Ok')
       : setCheckAnswer('Mistake');
     setBtnText('Next');
@@ -67,7 +67,12 @@ export const TranslateToEng = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.wordContainer}>
+      <View
+        style={{
+          ...styles.wordContainer,
+          borderColor: colorAnswer('#56aaf980'),
+        }}
+      >
         {(correctAnswer || chekAnswer.length > 0) && (
           <Text style={styles.wordInEng}>{words[int].word}</Text>
         )}
@@ -93,7 +98,9 @@ export const TranslateToEng = () => {
           editable={disabled}
           autoFocus={true}
           cursorColor={'#4fc87a'}
-          placeholder={`Enter the translation (${words[int].word.length} letters)`}
+          placeholder={`Enter the translation (${
+            words[int].word.replace(/[^a-zа-яё]/gi, '').length
+          } letters)`}
           placeholderTextColor={'#BDBDBD'}
           value={answer}
           onChangeText={(value) => setAnswer(value)}
