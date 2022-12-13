@@ -7,21 +7,28 @@ import {
   View,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { getRandomInt } from '../functions/getRandomInt';
-import { useGetWordsQuery } from '../../redux/wordsAPi';
+import { ResultPage } from './resultPage';
 
-export const TranslateToEng = () => {
-  const { data: words } = useGetWordsQuery();
-  const [int, setInt] = useState(0);
+export const TranslateToEng = ({ words, getWordsArr }) => {
+  const [currentWordInd, setCurrentWordInd] = useState(0);
   const [answer, setAnswer] = useState('');
   const [chekAnswer, setCheckAnswer] = useState('');
   const [btnText, setBtnText] = useState('');
   const [correctAnswer, setCorrectAnswer] = useState(false);
   const [disabled, setDisabled] = useState(true);
+  const [result, setResult] = useState(0);
+  const [showResult, setShowResult] = useState(false);
 
   useEffect(() => {
     textBtn();
   }, [answer, chekAnswer]);
+
+  const trainMore = () => {
+    getWordsArr();
+    setCurrentWordInd(0);
+    setShowResult(false);
+    setResult(0);
+  };
 
   const btnAction = () => {
     if (btnText === "Don't know") {
@@ -29,9 +36,12 @@ export const TranslateToEng = () => {
       setCheckAnswer('Mistake');
       setDisabled(false);
     } else if (btnText === 'Next') {
-      const MIN = 0;
       const MAX = words.length - 1;
-      setInt(getRandomInt(MIN, MAX));
+      if (currentWordInd >= MAX) {
+        setShowResult(true);
+      } else {
+        setCurrentWordInd((prevInd) => prevInd + 1);
+      }
       setCheckAnswer('');
       setAnswer('');
       setCorrectAnswer(false);
@@ -40,9 +50,13 @@ export const TranslateToEng = () => {
   };
 
   const checkUserAnswer = () => {
-    answer.toLowerCase().trim() === words[int].word
-      ? setCheckAnswer('Ok')
-      : setCheckAnswer('Mistake');
+    if (answer.toLowerCase().trim() === words[currentWordInd].word) {
+      setCheckAnswer('Ok');
+      setResult((prew) => prew + 1);
+    } else {
+      setCheckAnswer('Mistake');
+    }
+
     setBtnText('Next');
     setDisabled(false);
   };
@@ -67,78 +81,93 @@ export const TranslateToEng = () => {
 
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          ...styles.wordContainer,
-          borderColor: colorAnswer('#56aaf980'),
-        }}
-      >
-        {(correctAnswer || chekAnswer.length > 0) && (
-          <Text style={styles.wordInEng}>{words[int].word}</Text>
-        )}
-        <Text
-          style={{
-            fontSize: correctAnswer || chekAnswer.length > 0 ? 18 : 26,
-          }}
-        >
-          {words[int].translation}
-        </Text>
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={{
-            ...styles.input,
-            borderColor: colorAnswer('#56aaf980'),
-            color: colorAnswer('#111'),
-            width:
-              chekAnswer === 'Ok' || chekAnswer === 'Mistake' ? '100%' : '88%',
-          }}
-          textAlign={'center'}
-          selectTextOnFocus={disabled}
-          editable={disabled}
-          autoFocus={true}
-          cursorColor={'#4fc87a'}
-          placeholder={`Enter the translation (${
-            words[int].word.replace(/[^a-zа-яё]/gi, '').length
-          } letters)`}
-          placeholderTextColor={'#BDBDBD'}
-          value={answer}
-          onChangeText={(value) => setAnswer(value)}
+      {showResult ? (
+        <ResultPage
+          trainMore={trainMore}
+          result={result}
+          total={words.length}
         />
-        <TouchableOpacity
-          style={{
-            display:
-              chekAnswer === 'Ok' || chekAnswer === 'Mistake' ? 'none' : 'flex',
-          }}
-          activeOpacity={0.8}
-          onPress={checkUserAnswer}
-          disabled={!disabled}
-        >
-          <MaterialCommunityIcons
-            name="arrow-right-box"
-            size={50}
-            color="#4fc87a"
-          />
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity
-        onPress={btnAction}
-        style={{
-          ...styles.btn,
-          backgroundColor: btnText === "Don't know" ? 'transparent' : '#4fc87a',
-          borderWidth: btnText === "Don't know" ? 2 : 0,
-          borderColor: btnText === "Don't know" ? '#4fc87a' : 'transparent',
-        }}
-      >
-        <Text
-          style={{
-            color: btnText === "Don't know" ? '#4fc87a' : '#fff',
-            fontWeight: 'bold',
-          }}
-        >
-          {btnText.toUpperCase()}
-        </Text>
-      </TouchableOpacity>
+      ) : (
+        <>
+          <View
+            style={{
+              ...styles.wordContainer,
+              borderColor: colorAnswer('#56aaf980'),
+            }}
+          >
+            {(correctAnswer || chekAnswer.length > 0) && (
+              <Text style={styles.wordInEng}>{words[currentWordInd].word}</Text>
+            )}
+            <Text
+              style={{
+                fontSize: correctAnswer || chekAnswer.length > 0 ? 18 : 26,
+              }}
+            >
+              {words[currentWordInd].translation}
+            </Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={{
+                ...styles.input,
+                borderColor: colorAnswer('#56aaf980'),
+                color: colorAnswer('#111'),
+                width:
+                  chekAnswer === 'Ok' || chekAnswer === 'Mistake'
+                    ? '100%'
+                    : '88%',
+              }}
+              textAlign={'center'}
+              selectTextOnFocus={disabled}
+              editable={disabled}
+              autoFocus={true}
+              cursorColor={'#4fc87a'}
+              placeholder={`Enter the translation (${
+                words[currentWordInd].word.replace(/[^a-zа-яё]/gi, '').length
+              } letters)`}
+              placeholderTextColor={'#BDBDBD'}
+              value={answer}
+              onChangeText={(value) => setAnswer(value)}
+            />
+            <TouchableOpacity
+              style={{
+                display:
+                  chekAnswer === 'Ok' || chekAnswer === 'Mistake'
+                    ? 'none'
+                    : 'flex',
+              }}
+              activeOpacity={0.8}
+              onPress={checkUserAnswer}
+              disabled={!disabled}
+            >
+              <MaterialCommunityIcons
+                name="arrow-right-box"
+                size={50}
+                color="#4fc87a"
+              />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            onPress={btnAction}
+            style={{
+              ...styles.btn,
+              backgroundColor:
+                btnText === "Don't know" ? 'transparent' : '#4fc87a',
+              borderWidth: btnText === "Don't know" ? 2 : 0,
+              borderColor: btnText === "Don't know" ? '#4fc87a' : 'transparent',
+            }}
+          >
+            <Text
+              style={{
+                color: btnText === "Don't know" ? '#4fc87a' : '#fff',
+                fontWeight: 'bold',
+              }}
+            >
+              {btnText.toUpperCase()}
+            </Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 };
