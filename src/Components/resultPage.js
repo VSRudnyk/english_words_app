@@ -1,12 +1,34 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as Progress from 'react-native-progress';
 
-export const ResultPage = ({ trainMore, result, total }) => {
+export const ResultPage = ({ practiceMore, result, total }) => {
+  const progressPercent = () => {
+    const percent = result / total;
+    if (isNaN(percent)) {
+      return 0;
+    }
+    return percent;
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.congrats}>Congrats, all is done!</Text>
-      <Text style={styles.completed}>Completed:</Text>
-      <Text style={styles.result}>{`${result}/${total}`}</Text>
-      <TouchableOpacity onPress={trainMore} style={styles.btn}>
+      <View style={styles.progressContainer}>
+        <View style={{ ...styles.completedContainer }}>
+          <Text style={styles.completed}>Completed:</Text>
+          <Text style={styles.result}>{`${result}/${total}`}</Text>
+        </View>
+        <Progress.Circle
+          size={130}
+          progress={progressPercent()}
+          borderWidth={0}
+          thickness={10}
+          strokeCap={'round'}
+          color={'#56aaf9'}
+          unfilledColor={'#cce6fd'}
+        />
+      </View>
+      <TouchableOpacity onPress={practiceMore} style={styles.btn}>
         <Text style={styles.btnText}>PRACTICE</Text>
       </TouchableOpacity>
     </View>
@@ -18,9 +40,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    height: 100,
     marginHorizontal: 10,
-    marginTop: 40,
     marginBottom: 60,
+  },
+  progressContainer: {
+    position: 'relative',
+  },
+  completedContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    top: 40,
+    left: 20,
   },
   congrats: {
     fontSize: 30,
@@ -29,7 +61,7 @@ const styles = StyleSheet.create({
   },
   completed: {
     fontSize: 20,
-    color: '#111',
+    color: '#56aaf9',
   },
   btn: {
     position: 'absolute',

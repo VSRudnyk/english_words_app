@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const wordsAPI = createApi({
   reducerPath: 'wordsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://6260337a53a42eaa0701a5d8.mockapi.io',
+    baseUrl: 'https://words-backend-eight.vercel.app/api',
   }),
   tagTypes: ['Words'],
   endpoints: (builder) => ({

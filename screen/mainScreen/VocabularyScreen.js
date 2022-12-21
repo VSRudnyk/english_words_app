@@ -29,7 +29,7 @@ export const VocabularyScreen = () => {
   const { data: words, isLoading } = useGetWordsQuery();
   const [addWord] = useAddWordMutation();
   const [updateWord] = useUpdateWordMutation();
-  const [deleteWord] = useDeleteWordMutation();
+  const [deleteWord, { isLoading: isDelete }] = useDeleteWordMutation();
   const [newWord, setNewWord] = useState(initialState);
   const [modalVisible, setModalVisible] = useState(false);
   const [action, setAction] = useState('');
@@ -56,23 +56,23 @@ export const VocabularyScreen = () => {
       });
     } else if (action === 'Update') {
       updateWord({
-        id: newWord.id,
+        id: newWord._id,
         word: newWord.word.toLowerCase().trim(),
         translation: newWord.translation.toLowerCase().trim(),
       });
     } else if (action === 'Del') {
-      deleteWord(newWord.id);
+      deleteWord(newWord._id);
     }
     setNewWord(initialState);
   };
 
   return (
     <View style={styles.container}>
-      {isLoading ? (
-        <ActivityIndicator size="large" color="#00ff00" />
+      {isLoading || isDelete ? (
+        <ActivityIndicator size="large" color="#4fc87a" />
       ) : (
         <>
-          {isEmpty(words) ? (
+          {isEmpty(words.data) ? (
             <View style={styles.noDataFoundCont}>
               <Image
                 style={styles.noDataFoundImg}
@@ -81,7 +81,7 @@ export const VocabularyScreen = () => {
             </View>
           ) : (
             <FlatList
-              data={words}
+              data={words.data}
               renderItem={({ item }) => (
                 <View>
                   <TouchableOpacity
@@ -96,7 +96,7 @@ export const VocabularyScreen = () => {
                   </TouchableOpacity>
                 </View>
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item._id}
             />
           )}
           {!modalVisible && (
@@ -124,7 +124,9 @@ export const VocabularyScreen = () => {
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                   {action === 'Del' ? (
-                    <Text>{`Delete "${ucFirst(newWord.word)}"?`}</Text>
+                    <Text style={styles.modalTextDel}>{`Delete "${ucFirst(
+                      newWord.word
+                    )}"?`}</Text>
                   ) : (
                     <>
                       <TextInput
@@ -228,6 +230,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  modalTextDel: {
+    marginBottom: 20,
+    fontSize: 16,
   },
   input: {
     padding: 8,
