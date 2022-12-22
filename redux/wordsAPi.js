@@ -11,6 +11,10 @@ export const wordsAPI = createApi({
       query: () => `/words`,
       providesTags: ['Words'],
     }),
+    getRandomWords: builder.query({
+      query: (limit) => `/words/random?limit=${limit}`,
+      providesTags: ['Words'],
+    }),
     deleteWord: builder.mutation({
       query: (wordId) => ({
         url: `/words/${wordId}`,
@@ -42,6 +46,7 @@ export const wordsAPI = createApi({
 
 export const {
   useGetWordsQuery,
+  useGetRandomWordsQuery,
   useDeleteWordMutation,
   useAddWordMutation,
   useUpdateWordMutation,

@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 10,
-    height: '100%',
+    // height: '100%',
   },
   wordContainer: {
     justifyContent: 'center',
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 60,
     width: '100%',
     padding: 18,
     borderRadius: 8,
