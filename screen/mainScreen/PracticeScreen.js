@@ -15,7 +15,12 @@ import { ResultPage } from '../../src/Components/resultPage';
 
 export const PracticeScreen = () => {
   const { width } = useWindowDimensions();
-  const { data: words, isLoading, refetch } = useGetRandomWordsQuery(10);
+  const {
+    data: words,
+    isLoading,
+    isSuccess,
+    refetch,
+  } = useGetRandomWordsQuery(10);
   const [result, setResult] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [totalWords, setTotalWords] = useState(0);
@@ -35,55 +40,48 @@ export const PracticeScreen = () => {
 
   return (
     <View style={styles.container}>
-      {isLoading ? (
-        <ActivityIndicator size="large" color="#4fc87a" />
-      ) : (
+      {isLoading && <ActivityIndicator size="large" color="#4fc87a" />}
+      {isEmpty(words.data) && (
+        <View style={styles.noDataFoundCont}>
+          <Image
+            style={styles.noDataFoundImg}
+            source={require('../../image/no-data-found.png')}
+          />
+        </View>
+      )}
+      {!showResult && isSuccess && (
         <>
-          {isEmpty(words.data) ? (
-            <View style={styles.noDataFoundCont}>
-              <Image
-                style={styles.noDataFoundImg}
-                source={require('../../image/no-data-found.png')}
-              />
-            </View>
-          ) : (
-            <>
-              {!showResult ? (
-                <>
-                  <View style={styles.progressContainer}>
-                    <Text style={styles.progressText}>Translate the word</Text>
-                    <Text
-                      style={styles.progressText}
-                    >{`${numberOfWord}/${words.data.length}`}</Text>
-                  </View>
-                  <Progress.Bar
-                    progress={(numberOfWord - 1) / words.data.length}
-                    width={width - 20}
-                    borderRadius={0}
-                    height={4}
-                    animated={false}
-                    unfilledColor={'#dadada'}
-                    color={'#4fc87a'}
-                    borderWidth={0}
-                  />
+          <View style={styles.progressContainer}>
+            <Text style={styles.progressText}>Translate the word</Text>
+            <Text
+              style={styles.progressText}
+            >{`${numberOfWord}/${words.data.length}`}</Text>
+          </View>
+          <Progress.Bar
+            progress={(numberOfWord - 1) / words.data.length}
+            width={width - 20}
+            borderRadius={0}
+            height={4}
+            animated={false}
+            unfilledColor={'#dadada'}
+            color={'#4fc87a'}
+            borderWidth={0}
+          />
 
-                  <TranslateToEng
-                    words={words.data}
-                    setResult={setResult}
-                    showResultPage={showResultPage}
-                    setNumberOfWord={setNumberOfWord}
-                  />
-                </>
-              ) : (
-                <ResultPage
-                  practiceMore={practiceMore}
-                  result={result}
-                  total={totalWords}
-                />
-              )}
-            </>
-          )}
+          <TranslateToEng
+            words={words.data}
+            setResult={setResult}
+            showResultPage={showResultPage}
+            setNumberOfWord={setNumberOfWord}
+          />
         </>
+      )}
+      {showResult && (
+        <ResultPage
+          practiceMore={practiceMore}
+          result={result}
+          total={totalWords}
+        />
       )}
     </View>
   );
@@ -94,13 +92,14 @@ const styles = StyleSheet.create({
     height: '100%',
     marginHorizontal: 10,
     marginTop: 40,
-
-    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   progressContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
+    width: '100%',
   },
   progressText: {
     color: '#111',
