@@ -25,6 +25,8 @@ export const TranslateToEng = ({
     textBtn();
   }, [answer, chekAnswer]);
 
+  console.log(words);
+
   const btnAction = () => {
     if (btnText === "Don't know") {
       setCorrectAnswer(true);
