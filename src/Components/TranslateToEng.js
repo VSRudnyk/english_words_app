@@ -13,6 +13,7 @@ export const TranslateToEng = ({
   setResult,
   showResultPage,
   setNumberOfWord,
+  setErrorAnswer,
 }) => {
   const [currentWordInd, setCurrentWordInd] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -25,10 +26,10 @@ export const TranslateToEng = ({
     textBtn();
   }, [answer, chekAnswer]);
 
-  console.log(words);
-
   const btnAction = () => {
     if (btnText === "Don't know") {
+      setNumberOfWord((prew) => prew + 1);
+      setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
       setCorrectAnswer(true);
       setCheckAnswer('Mistake');
       setDisabled(false);
@@ -38,7 +39,7 @@ export const TranslateToEng = ({
       } else {
         setCurrentWordInd((prevInd) => prevInd + 1);
       }
-      setNumberOfWord((prew) => prew + 1);
+
       setCheckAnswer('');
       setAnswer('');
       setCorrectAnswer(false);
@@ -52,8 +53,9 @@ export const TranslateToEng = ({
       setResult((prew) => prew + 1);
     } else {
       setCheckAnswer('Mistake');
+      setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
     }
-
+    setNumberOfWord((prew) => prew + 1);
     setBtnText('Next');
     setDisabled(false);
   };
@@ -174,7 +176,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 0,
     width: '100%',
     padding: 18,
     borderRadius: 8,

@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Image,
   ActivityIndicator,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -19,6 +18,7 @@ import {
   useUpdateWordMutation,
   useDeleteWordMutation,
 } from '../../redux/wordsAPi';
+import { NoDataFound } from '../../src/Components/NoDataFound';
 
 const initialState = {
   word: '',
@@ -73,15 +73,12 @@ export const VocabularyScreen = () => {
       ) : (
         <>
           {isEmpty(words.data) ? (
-            <View style={styles.noDataFoundCont}>
-              <Image
-                style={styles.noDataFoundImg}
-                source={require('../../image/no-data-found.png')}
-              />
-            </View>
+            <NoDataFound />
           ) : (
             <FlatList
+              style={{ width: '100%' }}
               data={words.data}
+              keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 <View>
                   <TouchableOpacity
@@ -96,7 +93,6 @@ export const VocabularyScreen = () => {
                   </TouchableOpacity>
                 </View>
               )}
-              keyExtractor={(item) => item._id}
             />
           )}
           {!modalVisible && (
@@ -188,6 +184,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 10,
     marginTop: 40,
     marginBottom: 60,

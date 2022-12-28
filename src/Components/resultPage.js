@@ -1,7 +1,14 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import * as Progress from 'react-native-progress';
+import { ucFirst } from '../../src/functions/ucFirst';
 
-export const ResultPage = ({ practiceMore, result, total }) => {
+export const ResultPage = ({ practiceMore, result, total, errorAnswer }) => {
   const progressPercent = () => {
     const percent = result / total;
     if (isNaN(percent)) {
@@ -14,19 +21,41 @@ export const ResultPage = ({ practiceMore, result, total }) => {
     <View style={styles.container}>
       <Text style={styles.congrats}>Congrats, all is done!</Text>
       <View style={styles.progressContainer}>
-        <View style={{ ...styles.completedContainer }}>
-          <Text style={styles.completed}>Completed:</Text>
+        <View style={styles.completedContainer}>
+          <View style={{ position: 'absolute' }}>
+            <Progress.Circle
+              size={130}
+              progress={progressPercent()}
+              borderWidth={0}
+              thickness={10}
+              strokeCap={'round'}
+              color={'#56aaf9'}
+              unfilledColor={'#cce6fd'}
+            />
+          </View>
+          <Text style={styles.completed}>Completed</Text>
           <Text style={styles.result}>{`${result}/${total}`}</Text>
         </View>
-        <Progress.Circle
-          size={130}
-          progress={progressPercent()}
-          borderWidth={0}
-          thickness={10}
-          strokeCap={'round'}
-          color={'#56aaf9'}
-          unfilledColor={'#cce6fd'}
-        />
+        {errorAnswer.length > 0 && (
+          <View style={styles.mistakeContainer}>
+            <Text style={{ fontSize: 20, marginBottom: 25 }}>
+              You made mistakes in the following words:
+            </Text>
+            <FlatList
+              style={{ width: '100%' }}
+              data={errorAnswer}
+              keyExtractor={(item) => item._id}
+              renderItem={({ item }) => (
+                <View style={styles.mistakeWordContainer}>
+                  <Text style={styles.itemText}>{ucFirst(item.word)}</Text>
+                  <Text style={styles.itemText}>
+                    {ucFirst(item.translation)}
+                  </Text>
+                </View>
+              )}
+            />
+          </View>
+        )}
       </View>
       <TouchableOpacity onPress={practiceMore} style={styles.btn}>
         <Text style={styles.btnText}>PRACTICE</Text>
@@ -38,34 +67,33 @@ export const ResultPage = ({ practiceMore, result, total }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 100,
     marginHorizontal: 10,
-    marginBottom: 60,
+    width: '100%',
   },
   progressContainer: {
-    position: 'relative',
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 50,
+    justifyContent: 'center',
   },
   completedContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'absolute',
-    top: 40,
-    left: 20,
+    position: 'relative',
   },
   congrats: {
     fontSize: 30,
     color: '#111',
+    marginTop: 50,
     marginBottom: 50,
+    textAlign: 'center',
   },
   completed: {
     fontSize: 20,
     color: '#56aaf9',
   },
   btn: {
-    position: 'absolute',
-    bottom: 0,
     width: '100%',
     padding: 18,
     borderRadius: 8,
@@ -80,5 +108,15 @@ const styles = StyleSheet.create({
   result: {
     color: '#56aaf9',
     fontSize: 20,
+  },
+  mistakeContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 55,
+  },
+  mistakeWordContainer: {
+    marginTop: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
