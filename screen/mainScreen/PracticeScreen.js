@@ -8,7 +8,7 @@ import { useGetRandomWordsQuery } from '../../redux/wordsAPi';
 import { ResultPage } from '../../src/Components/ResultPage';
 
 export const PracticeScreen = () => {
-  const { data: words, isLoading, refetch } = useGetRandomWordsQuery(2);
+  const { data: words, isLoading, refetch } = useGetRandomWordsQuery(10);
   const [errorAnswer, setErrorAnswer] = useState([]);
   const [result, setResult] = useState(0);
   const [showResult, setShowResult] = useState(false);
