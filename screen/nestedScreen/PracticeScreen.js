@@ -7,8 +7,9 @@ import { TranslateToEng } from '../../src/Components/TranslateToEng';
 import { useGetRandomWordsQuery } from '../../redux/wordsAPi';
 import { ResultPage } from '../../src/Components/ResultPage';
 
-export const PracticeScreen = () => {
-  const { data: words, isLoading, refetch } = useGetRandomWordsQuery(10);
+export const PracticeScreen = ({ route }) => {
+  const { wordCount } = route.params;
+  const { data: words, isLoading, refetch } = useGetRandomWordsQuery(wordCount);
   const [errorAnswer, setErrorAnswer] = useState([]);
   const [result, setResult] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -72,9 +73,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginHorizontal: 10,
-    marginTop: 40,
-    marginBottom: 60,
-    // justifyContent: 'center',
+    marginTop: 10,
+    marginBottom: 10,
+    justifyContent: 'center',
     alignItems: 'center',
   },
 });

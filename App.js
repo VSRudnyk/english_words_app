@@ -4,7 +4,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Provider } from 'react-redux';
 import { VocabularyScreen } from './screen/mainScreen/VocabularyScreen';
-import { PracticeScreen } from './screen/mainScreen/PracticeScreen';
+import { DefaultScreen } from './screen/mainScreen/DefaultScreen';
 import { store } from './redux/store';
 
 const Tab = createMaterialBottomTabNavigator();
@@ -34,8 +34,8 @@ export default function App() {
             }}
           />
           <Tab.Screen
-            name="PracticeScreen"
-            component={PracticeScreen}
+            name="DefaultScreen"
+            component={DefaultScreen}
             options={{
               tabBarLabel: 'Practice',
               tabBarIcon: ({ color }) => (
