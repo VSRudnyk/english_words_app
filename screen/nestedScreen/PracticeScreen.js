@@ -9,7 +9,12 @@ import { ResultPage } from '../../src/Components/ResultPage';
 
 export const PracticeScreen = ({ route }) => {
   const { wordCount } = route.params;
-  const { data: words, isLoading, refetch } = useGetRandomWordsQuery(wordCount);
+  const {
+    data: words,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useGetRandomWordsQuery(wordCount);
   const [errorAnswer, setErrorAnswer] = useState([]);
   const [result, setResult] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -31,7 +36,7 @@ export const PracticeScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {isLoading ? (
+      {isFetching ? (
         <ActivityIndicator size="large" color="#4fc87a" />
       ) : (
         <>

@@ -26,13 +26,14 @@ const initialState = {
 };
 
 export const VocabularyScreen = () => {
-  const { data: words, isLoading } = useGetWordsQuery();
+  const { data: words, isFetching, isSuccess } = useGetWordsQuery();
   const [addWord] = useAddWordMutation();
   const [updateWord] = useUpdateWordMutation();
-  const [deleteWord, { isLoading: isDelete }] = useDeleteWordMutation();
+  const [deleteWord] = useDeleteWordMutation();
   const [newWord, setNewWord] = useState(initialState);
   const [modalVisible, setModalVisible] = useState(false);
   const [action, setAction] = useState('');
+  const [filter, setFilter] = useState('');
 
   const openModal = (text, item) => {
     setAction(text);
@@ -66,9 +67,21 @@ export const VocabularyScreen = () => {
     setNewWord(initialState);
   };
 
+  const getVisibleWords = () => {
+    const normalizedFilter = filter.toLowerCase();
+    if (isSuccess) {
+      return words.data.filter(
+        ({ word, translation }) =>
+          word.toLowerCase().includes(normalizedFilter) ||
+          translation.toLowerCase().includes(normalizedFilter)
+      );
+    }
+  };
+  const visibleWords = getVisibleWords();
+
   return (
     <View style={styles.container}>
-      {isLoading || isDelete ? (
+      {isFetching ? (
         <ActivityIndicator size="large" color="#4fc87a" />
       ) : (
         <>
@@ -77,7 +90,7 @@ export const VocabularyScreen = () => {
           ) : (
             <FlatList
               style={{ width: '100%' }}
-              data={words.data}
+              data={visibleWords}
               keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 <View>
@@ -95,7 +108,14 @@ export const VocabularyScreen = () => {
               )}
             />
           )}
-          {!modalVisible && (
+          <View style={styles.filterContainer}>
+            <TextInput
+              style={styles.filterInput}
+              placeholder={'Find word'}
+              placeholderTextColor={'#BDBDBD'}
+              value={filter}
+              onChangeText={(value) => setFilter(value)}
+            />
             <TouchableOpacity
               style={styles.openModalBtn}
               activeOpacity={0.8}
@@ -107,7 +127,8 @@ export const VocabularyScreen = () => {
                 color="#4fc87a"
               />
             </TouchableOpacity>
-          )}
+          </View>
+
           <View>
             <Modal
               animationType="fade"
@@ -187,7 +208,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 10,
     marginTop: 40,
-    marginBottom: 60,
+    marginBottom: 10,
   },
   itemContainer: {
     flexDirection: 'row',
@@ -197,10 +218,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
   },
-  openModalBtn: {
-    position: 'absolute',
-    right: 0,
-    bottom: -50,
+  filterContainer: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    width: '100%',
+    marginTop: 10,
+  },
+  filterInput: {
+    padding: 8,
+    width: '80%',
+    height: 40,
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: '#000',
   },
   closeModalBtn: {
     position: 'absolute',

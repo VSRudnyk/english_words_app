@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import * as Progress from 'react-native-progress';
-import { ucFirst } from '../../src/functions/ucFirst';
+import { ucFirst } from '../functions/ucFirst';
 
 export const ResultPage = ({ practiceMore, result, total, errorAnswer }) => {
   const progressPercent = () => {
