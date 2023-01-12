@@ -6,12 +6,12 @@ import { NoDataFound } from '../../src/Components/NoDataFound';
 import { TranslateToEng } from '../../src/Components/TranslateToEng';
 import { useGetRandomWordsQuery } from '../../redux/wordsAPi';
 import { ResultPage } from '../../src/Components/ResultPage';
+import { Loader } from '../../src/Components/Loader';
 
 export const PracticeScreen = ({ route }) => {
   const { wordCount } = route.params;
   const {
     data: words,
-    isLoading,
     isFetching,
     refetch,
   } = useGetRandomWordsQuery(wordCount);
@@ -34,42 +34,44 @@ export const PracticeScreen = ({ route }) => {
     setTotalWords(max);
   };
 
+  if (isFetching) return <Loader />;
+
   return (
     <View style={styles.container}>
-      {isFetching ? (
+      {/* {isFetching ? (
         <ActivityIndicator size="large" color="#4fc87a" />
-      ) : (
-        <>
-          {isEmpty(words.data) ? (
-            <NoDataFound />
-          ) : (
-            <>
-              {!showResult ? (
-                <>
-                  <ProgressBar
-                    numberOfWord={numberOfWord}
-                    numberOfAllWord={words.data.length}
-                  />
-                  <TranslateToEng
-                    words={words.data}
-                    setResult={setResult}
-                    showResultPage={showResultPage}
-                    setNumberOfWord={setNumberOfWord}
-                    setErrorAnswer={setErrorAnswer}
-                  />
-                </>
-              ) : (
-                <ResultPage
-                  practiceMore={practiceMore}
-                  result={result}
-                  total={totalWords}
-                  errorAnswer={errorAnswer}
+      ) : ( */}
+      <>
+        {isEmpty(words.data) ? (
+          <NoDataFound />
+        ) : (
+          <>
+            {!showResult ? (
+              <>
+                <ProgressBar
+                  numberOfWord={numberOfWord}
+                  numberOfAllWord={words.data.length}
                 />
-              )}
-            </>
-          )}
-        </>
-      )}
+                <TranslateToEng
+                  words={words.data}
+                  setResult={setResult}
+                  showResultPage={showResultPage}
+                  setNumberOfWord={setNumberOfWord}
+                  setErrorAnswer={setErrorAnswer}
+                />
+              </>
+            ) : (
+              <ResultPage
+                practiceMore={practiceMore}
+                result={result}
+                total={totalWords}
+                errorAnswer={errorAnswer}
+              />
+            )}
+          </>
+        )}
+      </>
+      {/* )} */}
     </View>
   );
 };

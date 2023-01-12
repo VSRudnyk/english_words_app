@@ -12,6 +12,11 @@ export const NoDataFound = () => {
 };
 
 const styles = StyleSheet.create({
+  noDataFoundCont: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   noDataFoundImg: {
     borderRadius: 8,
     width: 250,

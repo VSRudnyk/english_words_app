@@ -31,12 +31,13 @@ export const wordsAPI = createApi({
       invalidatesTags: ['Words'],
     }),
     updateWord: builder.mutation({
-      query: ({ word, translation, id }) => ({
+      query: ({ word, translation, synonyms, id }) => ({
         url: `/words/${id}`,
         method: 'PUT',
         body: {
           word,
           translation,
+          synonyms,
         },
       }),
       invalidatesTags: ['Words'],
