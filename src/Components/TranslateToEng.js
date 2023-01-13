@@ -48,8 +48,10 @@ export const TranslateToEng = ({
   };
 
   const checkUserAnswer = () => {
-    if (
-      answer.toLowerCase().trim() === words[currentWordInd].word ||
+    if (answer.toLowerCase().trim() === words[currentWordInd].word) {
+      setCheckAnswer('Ok');
+      setResult((prew) => prew + 1);
+    } else if (
       words[currentWordInd].synonyms.includes(answer.toLowerCase().trim())
     ) {
       setCheckAnswer('Ok');
