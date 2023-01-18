@@ -7,6 +7,8 @@ import {
   View,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
+import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
 
 export const TranslateToEng = ({
   words,
@@ -15,21 +17,36 @@ export const TranslateToEng = ({
   setNumberOfWord,
   setErrorAnswer,
 }) => {
+  const { data } = useGetWordsWithMistakesQuery();
+  const [addWordWithMistakes] = useAddWordWithMistakesMutation();
   const [currentWordInd, setCurrentWordInd] = useState(0);
   const [answer, setAnswer] = useState('');
   const [chekAnswer, setCheckAnswer] = useState('');
   const [btnText, setBtnText] = useState('');
   const [correctAnswer, setCorrectAnswer] = useState(false);
   const [disabled, setDisabled] = useState(true);
+  const [synonym, setSynonym] = useState(false);
 
   useEffect(() => {
     textBtn();
   }, [answer, chekAnswer]);
 
+  const addWordToMistakes = async () => {
+    for (const item of await data.data) {
+      if (item.translation === words[currentWordInd].translation) {
+        console.log(item.translation);
+        console.log(words[currentWordInd].translation);
+        return;
+      }
+    }
+    addWordWithMistakes(words[currentWordInd]);
+  };
+
   const btnAction = () => {
     if (btnText === "Don't know") {
       setNumberOfWord((prew) => prew + 1);
-      setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
+      addWordToMistakes();
+      // setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
       setCorrectAnswer(true);
       setCheckAnswer('Mistake');
       setDisabled(false);
@@ -44,6 +61,7 @@ export const TranslateToEng = ({
       setAnswer('');
       setCorrectAnswer(false);
       setDisabled(true);
+      setSynonym(false);
     }
   };
 
@@ -54,11 +72,13 @@ export const TranslateToEng = ({
     } else if (
       words[currentWordInd].synonyms.includes(answer.toLowerCase().trim())
     ) {
+      setSynonym(true);
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
     } else {
       setCheckAnswer('Mistake');
-      setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
+      addWordToMistakes();
+      // setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
     }
     setNumberOfWord((prew) => prew + 1);
     setBtnText('Next');
@@ -101,6 +121,21 @@ export const TranslateToEng = ({
         >
           {words[currentWordInd].translation}
         </Text>
+        {synonym && (
+          <View
+            style={{
+              marginTop: 15,
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'row',
+            }}
+          >
+            <Text style={{ fontSize: 26, marginRight: 10 }}>Synonym:</Text>
+            <Text style={{ fontSize: 26, color: '#4fc87a' }}>
+              {answer.toLowerCase().trim()}
+            </Text>
+          </View>
+        )}
       </View>
       <View style={styles.inputContainer}>
         <TextInput

@@ -23,7 +23,6 @@ const initialState = {
 
 export const VocabularyScreen = () => {
   const { data: words, isFetching, isSuccess } = useGetWordsQuery();
-
   const [newWord, setNewWord] = useState(initialState);
   const [modalVisible, setModalVisible] = useState(false);
   const [action, setAction] = useState('');
@@ -45,7 +44,7 @@ export const VocabularyScreen = () => {
   const getVisibleWords = () => {
     const normalizedFilter = filter.toLowerCase();
     if (isSuccess) {
-      return words.data.filter(
+      return words?.data?.filter(
         ({ word, translation }) =>
           word.toLowerCase().includes(normalizedFilter) ||
           translation.toLowerCase().includes(normalizedFilter)
@@ -55,34 +54,50 @@ export const VocabularyScreen = () => {
   const visibleWords = getVisibleWords();
 
   if (isFetching) return <Loader />;
-  if (isEmpty(words.data)) return <NoDataFound />;
 
   return (
     <View style={styles.container}>
-      <FlatList
-        style={{ width: '100%' }}
-        data={visibleWords}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <View>
-            <TouchableOpacity
-              style={styles.itemContainer}
-              onPress={() => openModal('Update', item)}
-            >
-              <Text style={styles.itemText}>{ucFirst(item.word)}</Text>
-              <Text style={styles.itemText}>{ucFirst(item.translation)}</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-      <View style={styles.filterContainer}>
-        <TextInput
-          style={styles.filterInput}
-          placeholder={'Find word'}
-          placeholderTextColor={'#BDBDBD'}
-          value={filter}
-          onChangeText={(value) => setFilter(value)}
+      {isEmpty(words.data) ? (
+        <NoDataFound />
+      ) : (
+        <FlatList
+          style={{ width: '100%' }}
+          data={visibleWords}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <View>
+              <TouchableOpacity
+                style={styles.itemContainer}
+                onPress={() => openModal('Update', item)}
+              >
+                <Text style={styles.itemText}>{ucFirst(item.word)}</Text>
+                <Text style={styles.itemText}>{ucFirst(item.translation)}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         />
+      )}
+      <View style={styles.bottomContainer}>
+        <View style={styles.filterContainer}>
+          <TextInput
+            style={styles.filterInput}
+            placeholder={'Find word'}
+            placeholderTextColor={'#BDBDBD'}
+            value={filter}
+            onChangeText={(value) => setFilter(value)}
+          />
+          <TouchableOpacity
+            style={{ position: 'absolute', right: 5 }}
+            activeOpacity={0.8}
+            onPress={() => setFilter('')}
+          >
+            <MaterialCommunityIcons
+              name="backspace"
+              size={24}
+              color="#4fc87a"
+            />
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity
           style={styles.openModalBtn}
           activeOpacity={0.8}
@@ -97,6 +112,7 @@ export const VocabularyScreen = () => {
       </View>
       {modalVisible && (
         <AppModal
+          words={words.data}
           newWord={newWord}
           setNewWord={setNewWord}
           action={action}
@@ -124,18 +140,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
   },
-  filterContainer: {
+  bottomContainer: {
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
     width: '100%',
     marginTop: 10,
   },
+  filterContainer: {
+    flex: 1,
+    width: '85%',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
   filterInput: {
     padding: 8,
-    width: '80%',
     height: 40,
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 8,
     borderColor: '#4fc87a',
   },

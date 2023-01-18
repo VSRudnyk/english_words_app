@@ -15,6 +15,10 @@ export const wordsAPI = createApi({
       query: (limit) => `/words/random?limit=${limit}`,
       providesTags: ['Words'],
     }),
+    getWordsWithMistakes: builder.query({
+      query: () => `/words/mistakes`,
+      providesTags: ['Words'],
+    }),
     deleteWord: builder.mutation({
       query: (wordId) => ({
         url: `/words/${wordId}`,
@@ -27,6 +31,18 @@ export const wordsAPI = createApi({
         url: '/words',
         method: 'POST',
         body: newWord,
+      }),
+      invalidatesTags: ['Words'],
+    }),
+    addWordWithMistakes: builder.mutation({
+      query: ({ word, translation, synonyms }) => ({
+        url: '/words/mistakes',
+        method: 'POST',
+        body: {
+          word,
+          translation,
+          synonyms,
+        },
       }),
       invalidatesTags: ['Words'],
     }),
@@ -48,7 +64,9 @@ export const wordsAPI = createApi({
 export const {
   useGetWordsQuery,
   useGetRandomWordsQuery,
+  useGetWordsWithMistakesQuery,
   useDeleteWordMutation,
   useAddWordMutation,
+  useAddWordWithMistakesMutation,
   useUpdateWordMutation,
 } = wordsAPI;

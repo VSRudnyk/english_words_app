@@ -1,32 +1,34 @@
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useState } from 'react';
 import { isEmpty } from 'lodash';
 import { ProgressBar } from '../../src/Components/ProgressBar';
 import { NoDataFound } from '../../src/Components/NoDataFound';
 import { TranslateToEng } from '../../src/Components/TranslateToEng';
 import { useGetRandomWordsQuery } from '../../redux/wordsAPi';
+import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
 import { ResultPage } from '../../src/Components/ResultPage';
 import { Loader } from '../../src/Components/Loader';
 
 export const PracticeScreen = ({ route }) => {
   const { wordCount } = route.params;
-  const {
-    data: words,
-    isFetching,
-    refetch,
-  } = useGetRandomWordsQuery(wordCount);
+  const { data: words, isLoading, refetch } = useGetRandomWordsQuery(wordCount);
+  // const [addWordWithMistakes] = useAddWordWithMistakesMutation();
   const [errorAnswer, setErrorAnswer] = useState([]);
   const [result, setResult] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [totalWords, setTotalWords] = useState(0);
   const [numberOfWord, setNumberOfWord] = useState(1);
 
-  const practiceMore = () => {
-    refetch();
+  const resetPage = () => {
     setShowResult(false);
     setResult(0);
     setNumberOfWord(1);
     setErrorAnswer([]);
+  };
+
+  const practiceMore = () => {
+    refetch();
+    resetPage();
   };
 
   const showResultPage = (max) => {
@@ -34,13 +36,10 @@ export const PracticeScreen = ({ route }) => {
     setTotalWords(max);
   };
 
-  if (isFetching) return <Loader />;
+  if (isLoading) return <Loader />;
 
   return (
     <View style={styles.container}>
-      {/* {isFetching ? (
-        <ActivityIndicator size="large" color="#4fc87a" />
-      ) : ( */}
       <>
         {isEmpty(words.data) ? (
           <NoDataFound />

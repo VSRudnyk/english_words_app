@@ -2,11 +2,15 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { useGetWordsQuery } from '../../redux/wordsAPi';
+import { Loader } from '../../src/Components/Loader';
 
 export const SelectionTaskScreen = ({ navigation }) => {
-  const { data: words, isSuccess } = useGetWordsQuery();
-  const [wordCount, setWordCount] = useState(words.data.length);
+  const { data: words, isSuccess, isFetching } = useGetWordsQuery();
+  const [wordCount, setWordCount] = useState(10);
 
+  if (isFetching) return <Loader />;
+
+  const allWordsLength = words.data.length;
   return (
     <>
       {isSuccess && (
@@ -24,7 +28,7 @@ export const SelectionTaskScreen = ({ navigation }) => {
               <Picker.Item label="10" value={10} />
               <Picker.Item label="20" value={20} />
               <Picker.Item label="30" value={30} />
-              <Picker.Item label="All" value={words.data.length} />
+              <Picker.Item label="All" value={allWordsLength} />
             </Picker>
           </View>
           <TouchableOpacity
