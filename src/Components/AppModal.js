@@ -53,23 +53,17 @@ export const AppModal = ({
         '#fff'
       );
     } else if (action === 'Update') {
-      for (const word of words) {
-        if (word.translation === normalizeTranslation) {
-          tostify(
-            `The word "${normalizeWord}" is already in the vocabulary`,
-            '#ff8a7a',
-            '#fff'
-          );
-          closeModal();
-          return;
-        }
-      }
       updateWord({
         id: newWord._id,
         word: normalizeWord,
         translation: normalizeTranslation,
         synonyms: normalizeSynonyms,
       });
+      tostify(
+        `The word "${normalizeWord}" was updated successfully`,
+        '#ff8a7a',
+        '#fff'
+      );
     }
     closeModal();
   };

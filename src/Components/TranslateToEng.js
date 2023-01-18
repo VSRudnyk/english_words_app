@@ -46,7 +46,7 @@ export const TranslateToEng = ({
     if (btnText === "Don't know") {
       setNumberOfWord((prew) => prew + 1);
       addWordToMistakes();
-      // setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
+      setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
       setCorrectAnswer(true);
       setCheckAnswer('Mistake');
       setDisabled(false);
@@ -78,7 +78,7 @@ export const TranslateToEng = ({
     } else {
       setCheckAnswer('Mistake');
       addWordToMistakes();
-      // setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
+      setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
     }
     setNumberOfWord((prew) => prew + 1);
     setBtnText('Next');
