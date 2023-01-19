@@ -7,8 +7,6 @@ import {
   View,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
-import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
 
 export const TranslateToEng = ({
   words,
@@ -17,8 +15,6 @@ export const TranslateToEng = ({
   setNumberOfWord,
   setErrorAnswer,
 }) => {
-  const { data } = useGetWordsWithMistakesQuery();
-  const [addWordWithMistakes] = useAddWordWithMistakesMutation();
   const [currentWordInd, setCurrentWordInd] = useState(0);
   const [answer, setAnswer] = useState('');
   const [chekAnswer, setCheckAnswer] = useState('');
@@ -31,21 +27,9 @@ export const TranslateToEng = ({
     textBtn();
   }, [answer, chekAnswer]);
 
-  const addWordToMistakes = async () => {
-    for (const item of await data.data) {
-      if (item.translation === words[currentWordInd].translation) {
-        console.log(item.translation);
-        console.log(words[currentWordInd].translation);
-        return;
-      }
-    }
-    addWordWithMistakes(words[currentWordInd]);
-  };
-
   const btnAction = () => {
     if (btnText === "Don't know") {
       setNumberOfWord((prew) => prew + 1);
-      addWordToMistakes();
       setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
       setCorrectAnswer(true);
       setCheckAnswer('Mistake');
@@ -77,7 +61,6 @@ export const TranslateToEng = ({
       setResult((prew) => prew + 1);
     } else {
       setCheckAnswer('Mistake');
-      addWordToMistakes();
       setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
     }
     setNumberOfWord((prew) => prew + 1);

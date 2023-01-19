@@ -5,21 +5,24 @@ import { ProgressBar } from '../../src/Components/ProgressBar';
 import { NoDataFound } from '../../src/Components/NoDataFound';
 import { TranslateToEng } from '../../src/Components/TranslateToEng';
 import { useGetRandomWordsQuery } from '../../redux/wordsAPi';
-import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
 import { ResultPage } from '../../src/Components/ResultPage';
 import { Loader } from '../../src/Components/Loader';
+import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
 
 export const PracticeScreen = ({ route }) => {
   const { wordCount } = route.params;
-  const { data: words, isLoading, refetch } = useGetRandomWordsQuery(wordCount);
-  // const [addWordWithMistakes] = useAddWordWithMistakesMutation();
+
   const [errorAnswer, setErrorAnswer] = useState([]);
   const [result, setResult] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [totalWords, setTotalWords] = useState(0);
   const [numberOfWord, setNumberOfWord] = useState(1);
 
+  const { data: words, isLoading, refetch } = useGetRandomWordsQuery(wordCount);
+  const [addWordWithMistakes] = useAddWordWithMistakesMutation();
+
   const resetPage = () => {
+    errorAnswer.map((item) => addWordWithMistakes(item));
     setShowResult(false);
     setResult(0);
     setNumberOfWord(1);
@@ -27,8 +30,8 @@ export const PracticeScreen = ({ route }) => {
   };
 
   const practiceMore = () => {
-    refetch();
     resetPage();
+    refetch();
   };
 
   const showResultPage = (max) => {
