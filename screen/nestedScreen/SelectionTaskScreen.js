@@ -2,14 +2,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { useGetWordsQuery } from '../../redux/wordsAPi';
-import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
+// import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
 import { Loader } from '../../src/Components/Loader';
 
 export const SelectionTaskScreen = ({ navigation }) => {
   const { data: words, isSuccess, isFetching } = useGetWordsQuery();
-  const { data: mistakes } = useGetWordsWithMistakesQuery();
+  // const { data: mistakes } = useGetWordsWithMistakesQuery();
   const [wordCount, setWordCount] = useState(10);
-  console.log(mistakes.data);
+
   if (isFetching) return <Loader />;
 
   const allWordsLength = words.data.length;
