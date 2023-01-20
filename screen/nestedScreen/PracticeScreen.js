@@ -8,9 +8,10 @@ import { useGetRandomWordsQuery } from '../../redux/wordsAPi';
 import { ResultPage } from '../../src/Components/ResultPage';
 import { Loader } from '../../src/Components/Loader';
 import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
+import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
 
 export const PracticeScreen = ({ route }) => {
-  const { wordCount } = route.params;
+  const { wordCount, trainMistakes } = route.params;
 
   const [errorAnswer, setErrorAnswer] = useState([]);
   const [result, setResult] = useState(0);
@@ -26,8 +27,13 @@ export const PracticeScreen = ({ route }) => {
   } = useGetRandomWordsQuery(wordCount);
   const [addWordWithMistakes] = useAddWordWithMistakesMutation();
 
+  const {
+    data: mistakes,
+    isFetching: fetching,
+    isLoading: loading,
+  } = useGetWordsWithMistakesQuery();
+
   const resetPage = () => {
-    // console.log(errorAnswer);
     addWordWithMistakes(errorAnswer);
     setShowResult(false);
     setResult(0);
@@ -46,11 +52,11 @@ export const PracticeScreen = ({ route }) => {
   };
 
   if (isFetching || isLoading) return <Loader />;
-
+  if (fetching || loading) return <Loader />;
   return (
     <View style={styles.container}>
       <>
-        {isEmpty(words.data) ? (
+        {isEmpty(words.data || mistakes.data) ? (
           <NoDataFound />
         ) : (
           <>
@@ -61,7 +67,7 @@ export const PracticeScreen = ({ route }) => {
                   numberOfAllWord={words.data.length}
                 />
                 <TranslateToEng
-                  words={words.data}
+                  words={trainMistakes ? mistakes.data : words.data}
                   setResult={setResult}
                   showResultPage={showResultPage}
                   setNumberOfWord={setNumberOfWord}
@@ -79,7 +85,6 @@ export const PracticeScreen = ({ route }) => {
           </>
         )}
       </>
-      {/* )} */}
     </View>
   );
 };

@@ -16,6 +16,8 @@ export const TranslateToEng = ({
   setNumberOfWord,
   setErrorAnswer,
 }) => {
+  console.log(words);
+
   const [currentWordInd, setCurrentWordInd] = useState(0);
   const [answer, setAnswer] = useState('');
   const [chekAnswer, setCheckAnswer] = useState('');
