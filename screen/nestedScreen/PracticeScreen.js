@@ -18,11 +18,17 @@ export const PracticeScreen = ({ route }) => {
   const [totalWords, setTotalWords] = useState(0);
   const [numberOfWord, setNumberOfWord] = useState(1);
 
-  const { data: words, isLoading, refetch } = useGetRandomWordsQuery(wordCount);
+  const {
+    data: words,
+    isFetching,
+    isLoading,
+    refetch,
+  } = useGetRandomWordsQuery(wordCount);
   const [addWordWithMistakes] = useAddWordWithMistakesMutation();
 
   const resetPage = () => {
-    errorAnswer.map((item) => addWordWithMistakes(item));
+    // console.log(errorAnswer);
+    addWordWithMistakes(errorAnswer);
     setShowResult(false);
     setResult(0);
     setNumberOfWord(1);
@@ -39,7 +45,7 @@ export const PracticeScreen = ({ route }) => {
     setTotalWords(max);
   };
 
-  if (isLoading) return <Loader />;
+  if (isFetching || isLoading) return <Loader />;
 
   return (
     <View style={styles.container}>

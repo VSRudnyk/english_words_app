@@ -35,15 +35,14 @@ export const wordsAPI = createApi({
       invalidatesTags: ['Words'],
     }),
     addWordWithMistakes: builder.mutation({
-      query: ({ word, translation, synonyms }) => ({
-        url: '/words/mistakes',
-        method: 'POST',
-        body: {
-          word,
-          translation,
-          synonyms,
-        },
-      }),
+      query: (body) => {
+        console.log(body);
+        return {
+          url: '/words/mistakes',
+          method: 'POST',
+          body,
+        };
+      },
       invalidatesTags: ['Words'],
     }),
     updateWord: builder.mutation({
