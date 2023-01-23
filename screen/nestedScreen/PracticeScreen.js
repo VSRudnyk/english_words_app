@@ -27,22 +27,18 @@ export const PracticeScreen = ({ route }) => {
   } = useGetRandomWordsQuery(wordCount);
   const [addWordWithMistakes] = useAddWordWithMistakesMutation();
 
-  const {
-    data: mistakes,
-    isFetching: fetching,
-    isLoading: loading,
-  } = useGetWordsWithMistakesQuery();
+  const { data: mistakes, isSuccess } = useGetWordsWithMistakesQuery();
 
-  const resetPage = () => {
-    addWordWithMistakes(errorAnswer);
+  const resetPage = async () => {
+    await addWordWithMistakes(errorAnswer);
     setShowResult(false);
     setResult(0);
     setNumberOfWord(1);
     setErrorAnswer([]);
   };
 
-  const practiceMore = () => {
-    resetPage();
+  const practiceMore = async () => {
+    await resetPage();
     refetch();
   };
 
@@ -52,11 +48,11 @@ export const PracticeScreen = ({ route }) => {
   };
 
   if (isFetching || isLoading) return <Loader />;
-  if (fetching || loading) return <Loader />;
+
   return (
     <View style={styles.container}>
       <>
-        {isEmpty(words.data || mistakes.data) ? (
+        {isEmpty(trainMistakes ? mistakes?.data : words?.data) ? (
           <NoDataFound />
         ) : (
           <>
@@ -64,10 +60,12 @@ export const PracticeScreen = ({ route }) => {
               <>
                 <ProgressBar
                   numberOfWord={numberOfWord}
-                  numberOfAllWord={words.data.length}
+                  numberOfAllWord={
+                    trainMistakes ? mistakes?.data.length : words?.data.length
+                  }
                 />
                 <TranslateToEng
-                  words={trainMistakes ? mistakes.data : words.data}
+                  words={trainMistakes ? mistakes?.data : words?.data}
                   setResult={setResult}
                   showResultPage={showResultPage}
                   setNumberOfWord={setNumberOfWord}

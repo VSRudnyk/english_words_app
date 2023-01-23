@@ -44,7 +44,7 @@ export const VocabularyScreen = () => {
   const getVisibleWords = () => {
     const normalizedFilter = filter.toLowerCase();
     if (isSuccess) {
-      return words.data.filter(
+      return words?.data.filter(
         ({ word, translation }) =>
           word.toLowerCase().includes(normalizedFilter) ||
           translation.toLowerCase().includes(normalizedFilter)
