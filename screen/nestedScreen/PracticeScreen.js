@@ -9,11 +9,15 @@ import { ResultPage } from '../../src/Components/ResultPage';
 import { Loader } from '../../src/Components/Loader';
 import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
 import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
+import { useDeleteWordFromMistakesMutation } from '../../redux/wordsAPi';
 
 export const PracticeScreen = ({ route }) => {
-  const { wordCount, trainMistakes } = route.params;
+  const { wordCount, value } = route.params;
+
+  const trainMistakes = value === 'mistakes';
 
   const [errorAnswer, setErrorAnswer] = useState([]);
+  const [correctMistakes, setCorrectMistakes] = useState([]);
   const [result, setResult] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [totalWords, setTotalWords] = useState(0);
@@ -26,15 +30,17 @@ export const PracticeScreen = ({ route }) => {
     refetch,
   } = useGetRandomWordsQuery(wordCount);
   const [addWordWithMistakes] = useAddWordWithMistakesMutation();
-
-  const { data: mistakes, isSuccess } = useGetWordsWithMistakesQuery();
+  const [deleteWordFromMistaken] = useDeleteWordFromMistakesMutation();
+  const { data: mistakes } = useGetWordsWithMistakesQuery();
 
   const resetPage = async () => {
     await addWordWithMistakes(errorAnswer);
+    await deleteWordFromMistaken(correctMistakes);
     setShowResult(false);
     setResult(0);
     setNumberOfWord(1);
     setErrorAnswer([]);
+    setCorrectMistakes([]);
   };
 
   const practiceMore = async () => {
@@ -49,40 +55,35 @@ export const PracticeScreen = ({ route }) => {
 
   if (isFetching || isLoading) return <Loader />;
 
+  if (isEmpty(trainMistakes ? mistakes?.data : words?.data))
+    return <NoDataFound />;
+
+  if (showResult)
+    return (
+      <ResultPage
+        practiceMore={practiceMore}
+        result={result}
+        total={totalWords}
+        errorAnswer={errorAnswer}
+      />
+    );
+
   return (
     <View style={styles.container}>
-      <>
-        {isEmpty(trainMistakes ? mistakes?.data : words?.data) ? (
-          <NoDataFound />
-        ) : (
-          <>
-            {!showResult ? (
-              <>
-                <ProgressBar
-                  numberOfWord={numberOfWord}
-                  numberOfAllWord={
-                    trainMistakes ? mistakes?.data.length : words?.data.length
-                  }
-                />
-                <TranslateToEng
-                  words={trainMistakes ? mistakes?.data : words?.data}
-                  setResult={setResult}
-                  showResultPage={showResultPage}
-                  setNumberOfWord={setNumberOfWord}
-                  setErrorAnswer={setErrorAnswer}
-                />
-              </>
-            ) : (
-              <ResultPage
-                practiceMore={practiceMore}
-                result={result}
-                total={totalWords}
-                errorAnswer={errorAnswer}
-              />
-            )}
-          </>
-        )}
-      </>
+      <ProgressBar
+        numberOfWord={numberOfWord}
+        numberOfAllWord={
+          trainMistakes ? mistakes?.data.length : words?.data.length
+        }
+      />
+      <TranslateToEng
+        words={trainMistakes ? mistakes?.data : words?.data}
+        setResult={setResult}
+        showResultPage={showResultPage}
+        setNumberOfWord={setNumberOfWord}
+        setErrorAnswer={setErrorAnswer}
+        setCorrectMistakes={setCorrectMistakes}
+      />
     </View>
   );
 };

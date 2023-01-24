@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useDeleteWordFromMistakesMutation } from '../../redux/wordsAPi';
 
 export const TranslateToEng = ({
   words,
@@ -15,9 +14,8 @@ export const TranslateToEng = ({
   showResultPage,
   setNumberOfWord,
   setErrorAnswer,
+  setCorrectMistakes,
 }) => {
-  const [deleteWordFromMistaken] = useDeleteWordFromMistakesMutation();
-
   const [currentWordInd, setCurrentWordInd] = useState(0);
   const [answer, setAnswer] = useState('');
   const [chekAnswer, setCheckAnswer] = useState('');
@@ -56,13 +54,14 @@ export const TranslateToEng = ({
     if (answer.toLowerCase().trim() === words[currentWordInd].word) {
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
-      deleteWordFromMistaken(words[currentWordInd]._id);
+      setCorrectMistakes((prew) => [...prew, words[currentWordInd]]);
     } else if (
       words[currentWordInd].synonyms.includes(answer.toLowerCase().trim())
     ) {
       setSynonym(true);
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
+      setCorrectMistakes((prew) => [...prew, words[currentWordInd]]);
     } else {
       setCheckAnswer('Mistake');
       setErrorAnswer((prew) => [...prew, words[currentWordInd]]);

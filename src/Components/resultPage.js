@@ -68,11 +68,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginHorizontal: 10,
-    width: '100%',
   },
   progressContainer: {
     flex: 1,
-    width: '100%',
     alignItems: 'center',
     marginBottom: 50,
     justifyContent: 'center',
@@ -94,8 +92,8 @@ const styles = StyleSheet.create({
     color: '#56aaf9',
   },
   btn: {
-    width: '100%',
     padding: 18,
+    marginBottom: 10,
     borderRadius: 8,
     backgroundColor: '#4fc87a',
     alignItems: 'center',
@@ -111,6 +109,7 @@ const styles = StyleSheet.create({
   },
   mistakeContainer: {
     width: '100%',
+    maxHeight: '50%',
     alignItems: 'center',
     marginTop: 55,
   },
