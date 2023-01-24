@@ -61,7 +61,7 @@ export const AppModal = ({
       });
       tostify(
         `The word "${normalizeWord}" was updated successfully`,
-        '#ff8a7a',
+        '#4fc87a',
         '#fff'
       );
     }

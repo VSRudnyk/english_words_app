@@ -30,6 +30,7 @@ export const wordsAPI = createApi({
       query: (body) => ({
         url: '/words/mistakes/delete',
         method: 'DELETE',
+        body,
       }),
       invalidatesTags: ['Words'],
     }),

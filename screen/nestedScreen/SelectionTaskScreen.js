@@ -10,7 +10,6 @@ export const SelectionTaskScreen = ({ navigation }) => {
   const { data: words, isSuccess, isFetching } = useGetWordsQuery();
   const [wordCount, setWordCount] = useState(10);
   const [value, setValue] = useState('all words');
-
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
 
   if (isFetching) return <Loader />;

@@ -151,7 +151,7 @@ export const TranslateToEng = ({
           }}
           activeOpacity={0.8}
           onPress={checkUserAnswer}
-          disabled={!disabled}
+          disabled={!disabled || answer.length < 1}
         >
           <MaterialCommunityIcons
             name="arrow-right-box"
