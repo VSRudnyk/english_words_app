@@ -8,7 +8,7 @@ import { Loader } from '../../src/Components/Loader';
 
 export const SelectionTaskScreen = ({ navigation }) => {
   const { data: words, isSuccess, isFetching } = useGetWordsQuery();
-  const [wordCount, setWordCount] = useState(10);
+  const [wordCount, setWordCount] = useState(2);
   const [value, setValue] = useState('all words');
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
 

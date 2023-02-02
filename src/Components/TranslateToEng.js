@@ -22,7 +22,6 @@ export const TranslateToEng = ({
   const [btnText, setBtnText] = useState('');
   const [correctAnswer, setCorrectAnswer] = useState(false);
   const [disabled, setDisabled] = useState(true);
-  const [synonym, setSynonym] = useState(false);
 
   useEffect(() => {
     textBtn();
@@ -46,7 +45,6 @@ export const TranslateToEng = ({
       setAnswer('');
       setCorrectAnswer(false);
       setDisabled(true);
-      setSynonym(false);
     }
   };
 
@@ -58,7 +56,6 @@ export const TranslateToEng = ({
     } else if (
       words[currentWordInd].synonyms.includes(answer.toLowerCase().trim())
     ) {
-      setSynonym(true);
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
       setCorrectMistakes((prew) => [...prew, words[currentWordInd]]);
@@ -98,7 +95,25 @@ export const TranslateToEng = ({
         }}
       >
         {(correctAnswer || chekAnswer.length > 0) && (
-          <Text style={styles.wordInEng}>{words[currentWordInd].word}</Text>
+          <>
+            <Text style={styles.wordInEng}>{words[currentWordInd].word}</Text>
+            {words[currentWordInd].synonyms && (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  position: 'absolute',
+                  bottom: 10,
+                  left: 10,
+                }}
+              >
+                <Text style={{ marginRight: 10, fontSize: 16 }}>Synonym:</Text>
+                <Text style={{ fontSize: 16 }}>
+                  {words[currentWordInd].synonyms}
+                </Text>
+              </View>
+            )}
+          </>
         )}
         <Text
           style={{
@@ -107,21 +122,6 @@ export const TranslateToEng = ({
         >
           {words[currentWordInd].translation}
         </Text>
-        {synonym && (
-          <View
-            style={{
-              marginTop: 15,
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}
-          >
-            <Text style={{ fontSize: 26, marginRight: 10 }}>Synonym:</Text>
-            <Text style={{ fontSize: 26, color: '#4fc87a' }}>
-              {answer.toLowerCase().trim()}
-            </Text>
-          </View>
-        )}
       </View>
       <View style={styles.inputContainer}>
         <TextInput
@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   wordContainer: {
+    position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
     height: 250,
