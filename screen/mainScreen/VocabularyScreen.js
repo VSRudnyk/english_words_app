@@ -22,11 +22,13 @@ const initialState = {
 };
 
 export const VocabularyScreen = () => {
-  const { data: words, isFetching, isSuccess } = useGetWordsQuery();
+  const { data, isFetching, isSuccess } = useGetWordsQuery();
   const [newWord, setNewWord] = useState(initialState);
   const [modalVisible, setModalVisible] = useState(false);
   const [action, setAction] = useState('');
   const [filter, setFilter] = useState('');
+
+  const words = data?.data;
 
   const openModal = (text, item) => {
     setAction(text);
@@ -44,7 +46,7 @@ export const VocabularyScreen = () => {
   const getVisibleWords = () => {
     const normalizedFilter = filter.toLowerCase();
     if (isSuccess) {
-      return words?.data.filter(
+      return words?.filter(
         ({ word, translation }) =>
           word.toLowerCase().includes(normalizedFilter) ||
           translation.toLowerCase().includes(normalizedFilter)
@@ -57,7 +59,7 @@ export const VocabularyScreen = () => {
 
   return (
     <View style={styles.container}>
-      {isEmpty(words.data) ? (
+      {isEmpty(words) ? (
         <NoDataFound />
       ) : (
         <FlatList
@@ -112,7 +114,7 @@ export const VocabularyScreen = () => {
       </View>
       {modalVisible && (
         <AppModal
-          words={words.data}
+          words={words}
           newWord={newWord}
           setNewWord={setNewWord}
           action={action}

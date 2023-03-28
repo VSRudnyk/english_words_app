@@ -1,16 +1,26 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DropDown from 'react-native-paper-dropdown';
 import { Provider } from 'react-native-paper';
 import { RadioButton, Text } from 'react-native-paper';
+import { useIsFocused } from '@react-navigation/native';
 import { useGetWordsQuery } from '../../redux/wordsAPi';
 import { Loader } from '../../src/Components/Loader';
+import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
 
 export const SelectionTaskScreen = ({ navigation }) => {
+  const isFocused = useIsFocused();
   const { data: words, isSuccess, isFetching } = useGetWordsQuery();
+  const { refetch } = useGetWordsWithMistakesQuery();
   const [wordCount, setWordCount] = useState(2);
   const [value, setValue] = useState('all words');
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
+
+  useEffect(() => {
+    if (isFocused) {
+      refetch();
+    }
+  });
 
   if (isFetching) return <Loader />;
 

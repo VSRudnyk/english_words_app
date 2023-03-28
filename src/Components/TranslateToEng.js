@@ -3,10 +3,10 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  TextInput,
   View,
 } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { AnswerInput } from './AnswerInput';
+import { FindCorrectAnswer } from './FindCorrectAnswer';
 
 export const TranslateToEng = ({
   words,
@@ -21,19 +21,32 @@ export const TranslateToEng = ({
   const [chekAnswer, setCheckAnswer] = useState('');
   const [btnText, setBtnText] = useState('');
   const [correctAnswer, setCorrectAnswer] = useState(false);
-  const [disabled, setDisabled] = useState(true);
+  const [disabled, setDisabled] = useState(false);
+  const [visibleComponent, setVisibleComponent] = useState(true);
 
   useEffect(() => {
     textBtn();
   }, [answer, chekAnswer]);
 
+  const currentWord = words[currentWordInd];
+  const {word, synonyms, translation} = currentWord;
+
+  const randomBoolean = () => {
+    const number = Math.random();
+    if(number < 0.5) {
+      setVisibleComponent(false);
+    } else {
+      setVisibleComponent(true);
+    }
+  }
+
   const btnAction = () => {
     if (btnText === "Don't know") {
       setNumberOfWord((prew) => prew + 1);
-      setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
+      setErrorAnswer((prew) => [...prew, currentWord]);
       setCorrectAnswer(true);
       setCheckAnswer('Mistake');
-      setDisabled(false);
+      setDisabled(true);
     } else if (btnText === 'Next') {
       if (currentWordInd >= words.length - 1) {
         showResultPage(words.length);
@@ -44,28 +57,31 @@ export const TranslateToEng = ({
       setCheckAnswer('');
       setAnswer('');
       setCorrectAnswer(false);
-      setDisabled(true);
+      setDisabled(false);
+      randomBoolean();
     }
   };
 
-  const checkUserAnswer = () => {
-    if (answer.toLowerCase().trim() === words[currentWordInd].word) {
+  const checkUserAnswer = (x) => {
+    if (answer.toLowerCase().trim() === word || x === word) {
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
-      setCorrectMistakes((prew) => [...prew, words[currentWordInd]]);
-    } else if (
-      words[currentWordInd].synonyms.includes(answer.toLowerCase().trim())
+      setCorrectMistakes((prew) => [...prew, currentWord]);
+    } 
+    else if (
+      visibleComponent && synonyms.includes(answer.toLowerCase().trim())
     ) {
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
-      setCorrectMistakes((prew) => [...prew, words[currentWordInd]]);
-    } else {
+      setCorrectMistakes((prew) => [...prew, currentWord]);
+    }
+     else {
       setCheckAnswer('Mistake');
-      setErrorAnswer((prew) => [...prew, words[currentWordInd]]);
+      setErrorAnswer((prew) => [...prew, currentWord]);
     }
     setNumberOfWord((prew) => prew + 1);
     setBtnText('Next');
-    setDisabled(false);
+    setDisabled(true);
   };
 
   const colorAnswer = (defaultColor) => {
@@ -96,8 +112,8 @@ export const TranslateToEng = ({
       >
         {(correctAnswer || chekAnswer.length > 0) && (
           <>
-            <Text style={styles.wordInEng}>{words[currentWordInd].word}</Text>
-            {words[currentWordInd].synonyms && (
+            <Text style={styles.wordInEng}>{visibleComponent ? word : translation}</Text>
+            {synonyms && (
               <View
                 style={{
                   flex: 1,
@@ -109,7 +125,7 @@ export const TranslateToEng = ({
               >
                 <Text style={{ marginRight: 10, fontSize: 16 }}>Synonym:</Text>
                 <Text style={{ fontSize: 16 }}>
-                  {words[currentWordInd].synonyms}
+                  {synonyms}
                 </Text>
               </View>
             )}
@@ -117,49 +133,17 @@ export const TranslateToEng = ({
         )}
         <Text
           style={{
-            fontSize: correctAnswer || chekAnswer.length > 0 ? 18 : 26,
+            fontSize: correctAnswer || chekAnswer.length > 0 ? 24 : 30,
           }}
         >
-          {words[currentWordInd].translation}
+          {visibleComponent ? translation : word}
         </Text>
       </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={{
-            ...styles.input,
-            borderColor: colorAnswer('#dadada'),
-            color: colorAnswer('#111'),
-            width:
-              chekAnswer === 'Ok' || chekAnswer === 'Mistake' ? '100%' : '88%',
-          }}
-          textAlign={'center'}
-          selectTextOnFocus={disabled}
-          editable={disabled}
-          autoFocus={true}
-          cursorColor={'#4fc87a'}
-          placeholder={`Enter the translation (${
-            words[currentWordInd].word.replace(/[^a-zа-яё]/gi, '').length
-          } letters)`}
-          placeholderTextColor={'#BDBDBD'}
-          value={answer}
-          onChangeText={(value) => setAnswer(value)}
-        />
-        <TouchableOpacity
-          style={{
-            display:
-              chekAnswer === 'Ok' || chekAnswer === 'Mistake' ? 'none' : 'flex',
-          }}
-          activeOpacity={0.8}
-          onPress={checkUserAnswer}
-          disabled={!disabled || answer.length < 1}
-        >
-          <MaterialCommunityIcons
-            name="arrow-right-box"
-            size={50}
-            color="#4fc87a"
-          />
-        </TouchableOpacity>
-      </View>
+      {visibleComponent ? 
+      <AnswerInput inputColor={colorAnswer} chekAnswer={chekAnswer} disabled={disabled} word={word} answer={answer} setAnswer={setAnswer} checkBtn={checkUserAnswer}/> : 
+      <FindCorrectAnswer words={words} currentWord={currentWord} chekChosenAnswer={checkUserAnswer} disabled={disabled}/>
+      }
+
       <TouchableOpacity
         onPress={btnAction}
         style={{
@@ -197,7 +181,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   wordInEng: {
-    fontSize: 26,
+    fontSize: 30,
     fontWeight: 'bold',
   },
   btn: {
@@ -211,19 +195,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  inputContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  input: {
-    height: 40,
-    maxHeight: 100,
-    padding: 10,
-    margin: 'auto',
-    borderWidth: 2,
-    borderRadius: 6,
-  },
+  
 });
