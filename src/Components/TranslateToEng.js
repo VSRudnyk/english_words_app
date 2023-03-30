@@ -22,7 +22,7 @@ export const TranslateToEng = ({
   const [btnText, setBtnText] = useState('');
   const [correctAnswer, setCorrectAnswer] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const [visibleComponent, setVisibleComponent] = useState(true);
+  const [visibleComponent, setVisibleComponent] = useState(false);
 
   useEffect(() => {
     textBtn();

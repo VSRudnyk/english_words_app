@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react';
 import {
     StyleSheet,
-    Text,
     FlatList,
-    TouchableOpacity,
     View,
   } from 'react-native';
   import { sampleSize, shuffle } from 'lodash';
-  import { ucFirst } from '../functions/ucFirst';
-
+  import { RenderItem } from './RenderItem';
 
 export const FindCorrectAnswer = ({words, currentWord, chekChosenAnswer, disabled}) => {
  
@@ -26,18 +23,12 @@ export const FindCorrectAnswer = ({words, currentWord, chekChosenAnswer, disable
     }
 
     return (
-    <View style={styles.listContainer}>
+    <View style={styles.listContainer}>   
       <FlatList
         data={suggestedWords}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <TouchableOpacity
-              style={styles.button}
-              disabled={disabled}
-              onPress={() => chekChosenAnswer(item.word)}
-            >
-              <Text style={styles.text}>{ucFirst(item.translation)}</Text>
-            </TouchableOpacity>
+          <RenderItem item={item} chekChosenAnswer={chekChosenAnswer} currentWord={currentWord} disabled={disabled}/>
         )}
       />
     </View>
@@ -50,17 +41,5 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 50,
     justifyContent: 'center'
-  },
-  button: {
-    padding: 18,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#dadada',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 15
-  },
-  text: {
-    fontSize: 18
   }
 })
