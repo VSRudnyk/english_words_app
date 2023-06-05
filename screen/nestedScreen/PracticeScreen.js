@@ -30,6 +30,9 @@ export const PracticeScreen = ({ route, navigation }) => {
   const [addWordWithMistakes] = useAddWordWithMistakesMutation();
   const { data: mistakes } = useGetWordsWithMistakesQuery();
 
+  const wordsWithMistakes = mistakes?.data;
+  const practiceWords = words?.data;
+
   const resetPage = async () => {
     if (!isEmpty(errorAnswer)) {
       const a = await addWordWithMistakes(errorAnswer);
@@ -57,7 +60,7 @@ export const PracticeScreen = ({ route, navigation }) => {
 
   if (isLoading || isFetching) return <Loader />;
 
-  if (isEmpty(trainMistakes ? mistakes?.data : words?.data))
+  if (isEmpty(trainMistakes ? wordsWithMistakes : practiceWords))
     return <NoDataFound />;
 
   if (showResult)
@@ -76,11 +79,11 @@ export const PracticeScreen = ({ route, navigation }) => {
       <ProgressBar
         numberOfWord={numberOfWord}
         numberOfAllWord={
-          trainMistakes ? mistakes?.data.length : words?.data.length
+          trainMistakes ? wordsWithMistakes.length : practiceWords.length
         }
       />
       <TranslateToEng
-        words={trainMistakes ? mistakes?.data : words?.data}
+        words={trainMistakes ? wordsWithMistakes : practiceWords}
         setResult={setResult}
         showResultPage={showResultPage}
         setNumberOfWord={setNumberOfWord}

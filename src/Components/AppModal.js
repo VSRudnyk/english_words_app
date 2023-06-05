@@ -103,6 +103,7 @@ export const AppModal = ({
               textAlign={'center'}
               placeholder={'English'}
               placeholderTextColor={'#BDBDBD'}
+              selectionColor={'#4fc87a'}
               value={newWord.word}
               onChangeText={(value) =>
                 setNewWord((prevState) => ({
@@ -116,6 +117,7 @@ export const AppModal = ({
               textAlign={'center'}
               placeholder={'Translation'}
               placeholderTextColor={'#BDBDBD'}
+              selectionColor={'#4fc87a'}
               value={newWord.translation}
               onChangeText={(value) =>
                 setNewWord((prevState) => ({
@@ -141,6 +143,7 @@ export const AppModal = ({
                 textAlign={'left'}
                 placeholder={'Add synonyms here'}
                 placeholderTextColor={'#BDBDBD'}
+                selectionColor={'#4fc87a'}
                 value={newWord.synonyms}
                 onChangeText={(value) =>
                   setNewWord((prevState) => ({

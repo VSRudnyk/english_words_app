@@ -85,6 +85,7 @@ export const VocabularyScreen = () => {
             style={styles.filterInput}
             placeholder={'Find word'}
             placeholderTextColor={'#BDBDBD'}
+            selectionColor={'#4fc87a'}
             value={filter}
             onChangeText={(value) => setFilter(value)}
           />

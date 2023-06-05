@@ -9,7 +9,6 @@ import { useGetWordsQuery } from '../../redux/wordsAPi';
 import { Loader } from '../../src/Components/Loader';
 import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
 import { useDeleteWordFromMistakesMutation } from '../../redux/wordsAPi';
-import { shuffle } from 'lodash';
 
 export const SelectionTaskScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -26,7 +25,6 @@ export const SelectionTaskScreen = ({ navigation }) => {
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
 
   const wordsWithMistakes = data?.data;
-  const shuffleWordsMistakes = shuffle(wordsWithMistakes);
 
   useEffect(() => {
     if (isFocused) {
@@ -93,7 +91,7 @@ export const SelectionTaskScreen = ({ navigation }) => {
                 ) : (
                   <>
                     <Text style={styles.itemHeader}>
-                      Misspelled words - {wordsWithMistakes.length}
+                      Common mistakes - {wordsWithMistakes.length}
                     </Text>
                     <FlatList
                       style={{
@@ -101,7 +99,7 @@ export const SelectionTaskScreen = ({ navigation }) => {
                         height: '65%',
                         marginTop: 10,
                       }}
-                      data={shuffleWordsMistakes}
+                      data={wordsWithMistakes}
                       keyExtractor={(item) => item._id}
                       renderItem={({ item }) => (
                         <View style={styles.itemContainer}>
