@@ -9,15 +9,13 @@ import { ResultPage } from '../../src/Components/ResultPage';
 import { Loader } from '../../src/Components/Loader';
 import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
 import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
-import { useDeleteWordFromMistakesMutation } from '../../redux/wordsAPi';
 
-export const PracticeScreen = ({ route }) => {
+export const PracticeScreen = ({ route, navigation }) => {
   const { wordCount, value } = route.params;
 
   const trainMistakes = value === 'mistakes';
 
   const [errorAnswer, setErrorAnswer] = useState([]);
-  const [correctMistakes, setCorrectMistakes] = useState([]);
   const [result, setResult] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [totalWords, setTotalWords] = useState(0);
@@ -30,26 +28,26 @@ export const PracticeScreen = ({ route }) => {
     refetch,
   } = useGetRandomWordsQuery(wordCount);
   const [addWordWithMistakes] = useAddWordWithMistakesMutation();
-  // const [deleteWordFromMistaken] = useDeleteWordFromMistakesMutation();
   const { data: mistakes } = useGetWordsWithMistakesQuery();
 
   const resetPage = async () => {
     if (!isEmpty(errorAnswer)) {
       const a = await addWordWithMistakes(errorAnswer);
     }
-    // if (!isEmpty(correctMistakes)) {
-    //   const d = await deleteWordFromMistaken(correctMistakes);
-    // }
     setShowResult(false);
     setResult(0);
     setNumberOfWord(1);
     setErrorAnswer([]);
-    setCorrectMistakes([]);
   };
 
   const practiceMore = async () => {
     await resetPage();
     refetch();
+  };
+
+  const finishPractice = async () => {
+    await resetPage();
+    navigation.navigate('SelectionTaskScreen');
   };
 
   const showResultPage = (max) => {
@@ -69,6 +67,7 @@ export const PracticeScreen = ({ route }) => {
         result={result}
         total={totalWords}
         errorAnswer={errorAnswer}
+        finish={finishPractice}
       />
     );
 
@@ -86,7 +85,6 @@ export const PracticeScreen = ({ route }) => {
         showResultPage={showResultPage}
         setNumberOfWord={setNumberOfWord}
         setErrorAnswer={setErrorAnswer}
-        setCorrectMistakes={setCorrectMistakes}
       />
     </View>
   );

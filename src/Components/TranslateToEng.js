@@ -9,7 +9,6 @@ export const TranslateToEng = ({
   showResultPage,
   setNumberOfWord,
   setErrorAnswer,
-  setCorrectMistakes,
 }) => {
   const [currentWordInd, setCurrentWordInd] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -61,14 +60,12 @@ export const TranslateToEng = ({
     if (answer.toLowerCase().trim() === word || x === word) {
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
-      setCorrectMistakes((prew) => [...prew, currentWord]);
     } else if (
       visibleComponent &&
       synonyms.includes(answer.toLowerCase().trim())
     ) {
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
-      setCorrectMistakes((prew) => [...prew, currentWord]);
     } else {
       setCheckAnswer('Mistake');
       setErrorAnswer((prew) => [...prew, currentWord]);

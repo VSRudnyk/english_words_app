@@ -4,19 +4,21 @@ import DropDown from 'react-native-paper-dropdown';
 import { Provider } from 'react-native-paper';
 import { RadioButton, Text } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-// import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import { useGetWordsQuery } from '../../redux/wordsAPi';
 import { Loader } from '../../src/Components/Loader';
 import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
 import { useDeleteWordFromMistakesMutation } from '../../redux/wordsAPi';
+import { shuffle } from 'lodash';
 
 export const SelectionTaskScreen = ({ navigation }) => {
-  // const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
   const { data: words, isSuccess, isFetching } = useGetWordsQuery();
   const {
     data,
     isFetching: loading,
     isSuccess: success,
+    refetch,
   } = useGetWordsWithMistakesQuery();
   const [deleteWordFromMistaken] = useDeleteWordFromMistakesMutation();
   const [wordCount, setWordCount] = useState(2);
@@ -24,12 +26,13 @@ export const SelectionTaskScreen = ({ navigation }) => {
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
 
   const wordsWithMistakes = data?.data;
+  const shuffleWordsMistakes = shuffle(wordsWithMistakes);
 
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     refetch();
-  //   }
-  // });
+  useEffect(() => {
+    if (isFocused) {
+      refetch();
+    }
+  }, []);
 
   if (isFetching && loading) return <Loader />;
 
@@ -88,27 +91,35 @@ export const SelectionTaskScreen = ({ navigation }) => {
                     />
                   </View>
                 ) : (
-                  <FlatList
-                    style={{ width: '100%', height: '70%' }}
-                    data={wordsWithMistakes}
-                    keyExtractor={(item) => item._id}
-                    renderItem={({ item }) => (
-                      <View style={styles.itemText}>
-                        <Text>{item.word}</Text>
-                        <TouchableOpacity
-                          // style={{ borderWidth: 1 }}
-                          activeOpacity={0.8}
-                          onPress={() => deleteWordFromMistaken(item._id)}
-                        >
-                          <MaterialCommunityIcons
-                            name="close-circle"
-                            size={24}
-                            color="#ff8a7a"
-                          />
-                        </TouchableOpacity>
-                      </View>
-                    )}
-                  />
+                  <>
+                    <Text style={styles.itemHeader}>
+                      Misspelled words - {wordsWithMistakes.length}
+                    </Text>
+                    <FlatList
+                      style={{
+                        width: '100%',
+                        height: '65%',
+                        marginTop: 10,
+                      }}
+                      data={shuffleWordsMistakes}
+                      keyExtractor={(item) => item._id}
+                      renderItem={({ item }) => (
+                        <View style={styles.itemContainer}>
+                          <Text style={styles.itemText}>{item.word}</Text>
+                          <TouchableOpacity
+                            activeOpacity={0.8}
+                            onPress={() => deleteWordFromMistaken(item._id)}
+                          >
+                            <MaterialCommunityIcons
+                              name="close-circle"
+                              size={24}
+                              color="#ff8a7a"
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    />
+                  </>
                 )}
               </View>
               <TouchableOpacity
@@ -157,7 +168,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  itemText: {
+  itemContainer: {
     borderWidth: 1,
     borderRadius: 8,
     borderColor: '#BDBDBD',
@@ -166,5 +177,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  itemText: {
+    fontSize: 16,
+  },
+  itemHeader: {
+    fontSize: 20,
+    textAlign: 'center',
   },
 });

@@ -8,7 +8,13 @@ import {
 import * as Progress from 'react-native-progress';
 import { ucFirst } from '../functions/ucFirst';
 
-export const ResultPage = ({ practiceMore, result, total, errorAnswer }) => {
+export const ResultPage = ({
+  practiceMore,
+  result,
+  total,
+  errorAnswer,
+  finish,
+}) => {
   const progressPercent = () => {
     const percent = result / total;
     if (isNaN(percent)) {
@@ -59,6 +65,9 @@ export const ResultPage = ({ practiceMore, result, total, errorAnswer }) => {
       </View>
       <TouchableOpacity onPress={practiceMore} style={styles.btn}>
         <Text style={styles.btnText}>PRACTICE</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={finish} style={styles.btn}>
+        <Text style={styles.btnText}>FINISH PRACTICE</Text>
       </TouchableOpacity>
     </View>
   );
