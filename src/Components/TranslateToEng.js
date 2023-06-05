@@ -1,10 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AnswerInput } from './AnswerInput';
 import { FindCorrectAnswer } from './FindCorrectAnswer';
 
@@ -29,16 +24,16 @@ export const TranslateToEng = ({
   }, [answer, chekAnswer]);
 
   const currentWord = words[currentWordInd];
-  const {word, synonyms, translation} = currentWord;
+  const { word, synonyms, translation } = currentWord;
 
   const randomBoolean = () => {
     const number = Math.random();
-    if(number < 0.5) {
+    if (number < 0.5) {
       setVisibleComponent(false);
     } else {
       setVisibleComponent(true);
     }
-  }
+  };
 
   const btnAction = () => {
     if (btnText === "Don't know") {
@@ -67,15 +62,14 @@ export const TranslateToEng = ({
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
       setCorrectMistakes((prew) => [...prew, currentWord]);
-    } 
-    else if (
-      visibleComponent && synonyms.includes(answer.toLowerCase().trim())
+    } else if (
+      visibleComponent &&
+      synonyms.includes(answer.toLowerCase().trim())
     ) {
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
       setCorrectMistakes((prew) => [...prew, currentWord]);
-    }
-     else {
+    } else {
       setCheckAnswer('Mistake');
       setErrorAnswer((prew) => [...prew, currentWord]);
     }
@@ -112,7 +106,9 @@ export const TranslateToEng = ({
       >
         {(correctAnswer || chekAnswer.length > 0) && (
           <>
-            <Text style={styles.wordInEng}>{visibleComponent ? word : translation}</Text>
+            <Text style={styles.wordInEng}>
+              {visibleComponent ? word : translation}
+            </Text>
             {synonyms && (
               <View
                 style={{
@@ -124,9 +120,7 @@ export const TranslateToEng = ({
                 }}
               >
                 <Text style={{ marginRight: 10, fontSize: 16 }}>Synonym:</Text>
-                <Text style={{ fontSize: 16 }}>
-                  {synonyms}
-                </Text>
+                <Text style={{ fontSize: 16 }}>{synonyms}</Text>
               </View>
             )}
           </>
@@ -139,10 +133,24 @@ export const TranslateToEng = ({
           {visibleComponent ? translation : word}
         </Text>
       </View>
-      {visibleComponent ? 
-      <AnswerInput inputColor={colorAnswer} chekAnswer={chekAnswer} disabled={disabled} word={word} answer={answer} setAnswer={setAnswer} checkBtn={checkUserAnswer}/> : 
-      <FindCorrectAnswer words={words} currentWord={currentWord} chekChosenAnswer={checkUserAnswer} disabled={disabled}/>
-      }
+      {visibleComponent ? (
+        <AnswerInput
+          inputColor={colorAnswer}
+          chekAnswer={chekAnswer}
+          disabled={disabled}
+          word={word}
+          answer={answer}
+          setAnswer={setAnswer}
+          checkBtn={checkUserAnswer}
+        />
+      ) : (
+        <FindCorrectAnswer
+          words={words}
+          currentWord={currentWord}
+          chekChosenAnswer={checkUserAnswer}
+          disabled={disabled}
+        />
+      )}
 
       <TouchableOpacity
         onPress={btnAction}
@@ -195,5 +203,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  
 });

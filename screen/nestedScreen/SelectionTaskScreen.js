@@ -1,28 +1,37 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
 import DropDown from 'react-native-paper-dropdown';
 import { Provider } from 'react-native-paper';
 import { RadioButton, Text } from 'react-native-paper';
-import { useIsFocused } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+// import { useIsFocused } from '@react-navigation/native';
 import { useGetWordsQuery } from '../../redux/wordsAPi';
 import { Loader } from '../../src/Components/Loader';
 import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
+import { useDeleteWordFromMistakesMutation } from '../../redux/wordsAPi';
 
 export const SelectionTaskScreen = ({ navigation }) => {
-  const isFocused = useIsFocused();
+  // const isFocused = useIsFocused();
   const { data: words, isSuccess, isFetching } = useGetWordsQuery();
-  const { refetch } = useGetWordsWithMistakesQuery();
+  const {
+    data,
+    isFetching: loading,
+    isSuccess: success,
+  } = useGetWordsWithMistakesQuery();
+  const [deleteWordFromMistaken] = useDeleteWordFromMistakesMutation();
   const [wordCount, setWordCount] = useState(2);
   const [value, setValue] = useState('all words');
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
 
-  useEffect(() => {
-    if (isFocused) {
-      refetch();
-    }
-  });
+  const wordsWithMistakes = data?.data;
 
-  if (isFetching) return <Loader />;
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     refetch();
+  //   }
+  // });
+
+  if (isFetching && loading) return <Loader />;
 
   const allWordsLength = words.data.length;
 
@@ -43,7 +52,7 @@ export const SelectionTaskScreen = ({ navigation }) => {
 
   return (
     <>
-      {isSuccess && (
+      {isSuccess && success && (
         <>
           <Provider>
             <View style={styles.container}>
@@ -64,7 +73,7 @@ export const SelectionTaskScreen = ({ navigation }) => {
                     <RadioButton value="mistakes" color="#4fc87a" />
                   </View>
                 </RadioButton.Group>
-                {value === 'all words' && (
+                {value === 'all words' ? (
                   <View style={styles.dropDownContainer}>
                     <DropDown
                       label={'Choose the number of words to practice'}
@@ -78,6 +87,28 @@ export const SelectionTaskScreen = ({ navigation }) => {
                       activeColor="#4fc87a"
                     />
                   </View>
+                ) : (
+                  <FlatList
+                    style={{ width: '100%', height: '70%' }}
+                    data={wordsWithMistakes}
+                    keyExtractor={(item) => item._id}
+                    renderItem={({ item }) => (
+                      <View style={styles.itemText}>
+                        <Text>{item.word}</Text>
+                        <TouchableOpacity
+                          // style={{ borderWidth: 1 }}
+                          activeOpacity={0.8}
+                          onPress={() => deleteWordFromMistaken(item._id)}
+                        >
+                          <MaterialCommunityIcons
+                            name="close-circle"
+                            size={24}
+                            color="#ff8a7a"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  />
                 )}
               </View>
               <TouchableOpacity
@@ -113,8 +144,10 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   startBtn: {
+    position: 'absolute',
+    bottom: 10,
+    width: '100%',
     padding: 18,
-    marginBottom: 10,
     borderRadius: 8,
     backgroundColor: '#4fc87a',
     alignItems: 'center',
@@ -123,5 +156,15 @@ const styles = StyleSheet.create({
   btnText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  itemText: {
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: '#BDBDBD',
+    padding: 8,
+    fontSize: 16,
+    marginBottom: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });

@@ -29,17 +29,17 @@ export const PracticeScreen = ({ route }) => {
     isLoading,
     refetch,
   } = useGetRandomWordsQuery(wordCount);
-  const [addWordWithMistakes, {isSuccess: addSuccess}] = useAddWordWithMistakesMutation();
-  const [deleteWordFromMistaken, {isSuccess: delSuccess}] = useDeleteWordFromMistakesMutation();
+  const [addWordWithMistakes] = useAddWordWithMistakesMutation();
+  // const [deleteWordFromMistaken] = useDeleteWordFromMistakesMutation();
   const { data: mistakes } = useGetWordsWithMistakesQuery();
-  
+
   const resetPage = async () => {
     if (!isEmpty(errorAnswer)) {
       const a = await addWordWithMistakes(errorAnswer);
     }
-    if (!isEmpty(correctMistakes)) {
-      const d = await deleteWordFromMistaken(correctMistakes);
-    }
+    // if (!isEmpty(correctMistakes)) {
+    //   const d = await deleteWordFromMistaken(correctMistakes);
+    // }
     setShowResult(false);
     setResult(0);
     setNumberOfWord(1);
