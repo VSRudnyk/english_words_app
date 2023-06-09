@@ -22,6 +22,7 @@ export const SelectionTaskScreen = ({ navigation }) => {
   const [deleteWordFromMistaken] = useDeleteWordFromMistakesMutation();
   const [wordCount, setWordCount] = useState(2);
   const [value, setValue] = useState('all words');
+  const [practVar, setPractVar] = useState('translate words');
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
 
   const wordsWithMistakes = data?.data;
@@ -61,19 +62,41 @@ export const SelectionTaskScreen = ({ navigation }) => {
                 <Text style={styles.radioButtonHeader}>
                   Choose what you want to practice:
                 </Text>
-                <RadioButton.Group
-                  onValueChange={(newValue) => setValue(newValue)}
-                  value={value}
-                >
-                  <View>
-                    <Text>All words</Text>
-                    <RadioButton value="all words" color="#4fc87a" />
-                  </View>
-                  <View>
-                    <Text>Mistakes</Text>
-                    <RadioButton value="mistakes" color="#4fc87a" />
-                  </View>
-                </RadioButton.Group>
+
+                <View style={styles.radioButtonGroup}>
+                  <RadioButton.Group
+                    onValueChange={(newValue) => setValue(newValue)}
+                    value={value}
+                  >
+                    <View style={styles.radioButtonItem}>
+                      <Text>All words</Text>
+                      <RadioButton value="all words" color="#4fc87a" />
+                    </View>
+                    <View style={styles.radioButtonItem}>
+                      <Text>Mistakes</Text>
+                      <RadioButton value="mistakes" color="#4fc87a" />
+                    </View>
+                  </RadioButton.Group>
+
+                  <RadioButton.Group
+                    onValueChange={(newValue) => setPractVar(newValue)}
+                    value={practVar}
+                  >
+                    <View style={styles.radioButtonItem}>
+                      <RadioButton value="translate words" color="#4fc87a" />
+                      <Text>Translate words</Text>
+                    </View>
+                    <View style={styles.radioButtonItem}>
+                      <RadioButton value="find answer" color="#4fc87a" />
+                      <Text>Find answer</Text>
+                    </View>
+                    <View style={styles.radioButtonItem}>
+                      <RadioButton value="random selection" color="#4fc87a" />
+                      <Text>Random selection</Text>
+                    </View>
+                  </RadioButton.Group>
+                </View>
+
                 {value === 'all words' ? (
                   <View style={styles.dropDownContainer}>
                     <DropDown
@@ -123,7 +146,11 @@ export const SelectionTaskScreen = ({ navigation }) => {
               <TouchableOpacity
                 style={styles.startBtn}
                 onPress={() =>
-                  navigation.navigate('Practice', { wordCount, value })
+                  navigation.navigate('Practice', {
+                    wordCount,
+                    value,
+                    practVar,
+                  })
                 }
               >
                 <Text style={styles.btnText}>Start</Text>
@@ -145,9 +172,19 @@ const styles = StyleSheet.create({
   radioButtonContainer: {
     marginTop: 25,
   },
+  radioButtonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   radioButtonHeader: {
     marginBottom: 10,
     fontSize: 18,
+    textAlign: 'center',
+  },
+  radioButtonItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   dropDownContainer: {
     marginTop: 50,

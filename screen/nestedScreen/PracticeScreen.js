@@ -9,9 +9,10 @@ import { ResultPage } from '../../src/Components/ResultPage';
 import { Loader } from '../../src/Components/Loader';
 import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
 import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
+import { AlertModal } from '../../src/Components/Alert';
 
 export const PracticeScreen = ({ route, navigation }) => {
-  const { wordCount, value } = route.params;
+  const { wordCount, value, practVar } = route.params;
 
   const trainMistakes = value === 'mistakes';
 
@@ -84,6 +85,7 @@ export const PracticeScreen = ({ route, navigation }) => {
       />
       <TranslateToEng
         words={trainMistakes ? wordsWithMistakes : practiceWords}
+        practiceVariant={practVar}
         setResult={setResult}
         showResultPage={showResultPage}
         setNumberOfWord={setNumberOfWord}

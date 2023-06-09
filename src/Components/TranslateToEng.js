@@ -5,6 +5,7 @@ import { FindCorrectAnswer } from './FindCorrectAnswer';
 
 export const TranslateToEng = ({
   words,
+  practiceVariant,
   setResult,
   showResultPage,
   setNumberOfWord,
@@ -18,19 +19,31 @@ export const TranslateToEng = ({
   const [disabled, setDisabled] = useState(false);
   const [visibleComponent, setVisibleComponent] = useState(false);
 
+  console.log(practiceVariant);
+
   useEffect(() => {
     textBtn();
   }, [answer, chekAnswer]);
+
+  useEffect(() => {
+    randomBoolean();
+  }, []);
 
   const currentWord = words[currentWordInd];
   const { word, synonyms, translation } = currentWord;
 
   const randomBoolean = () => {
-    const number = Math.random();
-    if (number < 0.5) {
-      setVisibleComponent(false);
-    } else {
+    if (practiceVariant === 'translate words') {
       setVisibleComponent(true);
+    } else if (practiceVariant === 'find answer') {
+      setVisibleComponent(false);
+    } else if (practiceVariant === 'random selection') {
+      const number = Math.random();
+      if (number < 0.5) {
+        setVisibleComponent(false);
+      } else {
+        setVisibleComponent(true);
+      }
     }
   };
 
@@ -52,7 +65,7 @@ export const TranslateToEng = ({
       setAnswer('');
       setCorrectAnswer(false);
       setDisabled(false);
-      randomBoolean();
+      practiceVariant === 'random selection' && randomBoolean();
     }
   };
 
@@ -142,7 +155,6 @@ export const TranslateToEng = ({
         />
       ) : (
         <FindCorrectAnswer
-          words={words}
           currentWord={currentWord}
           chekChosenAnswer={checkUserAnswer}
           disabled={disabled}
