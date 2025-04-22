@@ -62,22 +62,26 @@ export const VocabularyScreen = () => {
       {isEmpty(words) ? (
         <NoDataFound />
       ) : (
-        <FlatList
-          style={{ width: '100%' }}
-          data={visibleWords}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View>
-              <TouchableOpacity
-                style={styles.itemContainer}
-                onPress={() => openModal('Update', item)}
-              >
-                <Text style={styles.itemText}>{ucFirst(item.word)}</Text>
-                <Text style={styles.itemText}>{ucFirst(item.translation)}</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        />
+        <>
+          <Text style={styles.vacabularyHeader}>Total words in the vocabulary: { words.length }</Text>
+          <FlatList
+            style={{ width: '100%' }}
+            data={visibleWords}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <View>
+                
+                <TouchableOpacity
+                  style={styles.itemContainer}
+                  onPress={() => openModal('Update', item)}
+                >
+                  <Text style={styles.itemText}>{ucFirst(item.word)}</Text>
+                  <Text style={styles.itemText}>{ucFirst(item.translation)}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        </>
       )}
       <View style={styles.bottomContainer}>
         <View style={styles.filterContainer}>
@@ -135,13 +139,23 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 10,
   },
+  vacabularyHeader: {
+    marginBottom: 10,
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#000',
+    fontWeight: 'bold',
+  },
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    border: '2px solid #4fc87a',
+    marginBottom: 4,
+    borderRadius: 8,
   },
   itemText: {
     fontSize: 16,
-    marginBottom: 16,
+    padding: 10,
   },
   bottomContainer: {
     alignItems: 'center',

@@ -14,6 +14,7 @@ import {
   useUpdateWordMutation,
   useDeleteWordMutation,
 } from '../../redux/wordsAPi';
+import { speak } from '../functions/tts';
 
 const windowWidth = Dimensions.get('window').width;
 const btnWidth = (windowWidth - 15) / 2;
@@ -112,6 +113,14 @@ export const AppModal = ({
                 }))
               }
             />
+            <TouchableOpacity activeOpacity={0.8}
+              onPress={() => speak(normalizeWord)}>
+              <MaterialCommunityIcons
+                name="volume-high"
+                size={24}
+                color="#4fc87a"
+              />
+            </TouchableOpacity>
             <TextInput
               style={action === 'Add' ? styles.input : styles.inputCard}
               textAlign={'center'}
@@ -217,13 +226,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 35,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
     elevation: 5,
   },
   modalTextDel: {
@@ -231,7 +234,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   input: {
-    padding: 8,
+    padding: 10,
     width: '100%',
     borderRadius: 8,
     borderColor: '#E8E8E8',
@@ -240,6 +243,7 @@ const styles = StyleSheet.create({
   },
   inputCard: {
     fontSize: 18,
+    textAlign: 'center',
   },
   submitBtn: {
     flex: 1,

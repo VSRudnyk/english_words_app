@@ -2,9 +2,9 @@ import { StyleSheet, TouchableOpacity, TextInput, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export const AnswerInput = ({
-  inputColor,
+  inputColor = () => '#dadada',
+  disabled = false,
   chekAnswer,
-  disabled,
   word,
   answer,
   setAnswer,

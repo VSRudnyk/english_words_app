@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AnswerInput } from './AnswerInput';
 import { FindCorrectAnswer } from './FindCorrectAnswer';
+import { speak } from '../functions/tts';
+
 
 export const TranslateToEng = ({
   words,
@@ -18,8 +21,6 @@ export const TranslateToEng = ({
   const [correctAnswer, setCorrectAnswer] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [visibleComponent, setVisibleComponent] = useState(false);
-
-  console.log(practiceVariant);
 
   useEffect(() => {
     textBtn();
@@ -119,6 +120,14 @@ export const TranslateToEng = ({
             <Text style={styles.wordInEng}>
               {visibleComponent ? word : translation}
             </Text>
+            <TouchableOpacity activeOpacity={0.8}
+              onPress={() => speak(word)}>
+              <MaterialCommunityIcons
+                name="volume-high"
+                size={24}
+                color="#4fc87a"
+              />
+            </TouchableOpacity>
             {synonyms && (
               <View
                 style={{

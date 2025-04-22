@@ -5,7 +5,7 @@ import { ProgressBar } from '../../src/Components/ProgressBar';
 import { NoDataFound } from '../../src/Components/NoDataFound';
 import { TranslateToEng } from '../../src/Components/TranslateToEng';
 import { useGetRandomWordsQuery } from '../../redux/wordsAPi';
-import { ResultPage } from '../../src/Components/ResultPage';
+import { ResultPage } from '../../src/Components/resultPage';
 import { Loader } from '../../src/Components/Loader';
 import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
 import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
@@ -36,7 +36,12 @@ export const PracticeScreen = ({ route, navigation }) => {
 
   const resetPage = async () => {
     if (!isEmpty(errorAnswer)) {
-      const a = await addWordWithMistakes(errorAnswer);
+      try {
+        const response = await addWordWithMistakes(errorAnswer).unwrap();
+        console.log('Words added successfully:', response);
+      } catch (error) {
+        console.error('Error adding words:', error);
+      }
     }
     setShowResult(false);
     setResult(0);

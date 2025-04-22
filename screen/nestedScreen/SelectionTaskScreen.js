@@ -1,8 +1,7 @@
 import { StyleSheet, TouchableOpacity, View, FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
-import DropDown from 'react-native-paper-dropdown';
-import { Provider } from 'react-native-paper';
-import { RadioButton, Text } from 'react-native-paper';
+import { Dropdown } from 'react-native-paper-dropdown';
+import { Provider as PaperProvider, RadioButton, Text, DefaultTheme } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useIsFocused } from '@react-navigation/native';
 import { useGetWordsQuery } from '../../redux/wordsAPi';
@@ -23,7 +22,18 @@ export const SelectionTaskScreen = ({ navigation }) => {
   const [wordCount, setWordCount] = useState(2);
   const [value, setValue] = useState('all words');
   const [practVar, setPractVar] = useState('translate words');
-  const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
+
+  const lightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#ffffff', // Белый фон
+    surface: '#ffffff',    // Белый фон для компонентов
+    text: '#000000',       // Чёрный текст
+    primary: '#4fc87a',    // Основной цвет
+    accent: '#4fc87a',     // Акцентный цвет
+  },
+};
 
   const wordsWithMistakes = data?.data;
 
@@ -56,7 +66,7 @@ export const SelectionTaskScreen = ({ navigation }) => {
     <>
       {isSuccess && success && (
         <>
-          <Provider>
+          <PaperProvider theme={lightTheme}>
             <View style={styles.container}>
               <View style={styles.radioButtonContainer}>
                 <Text style={styles.radioButtonHeader}>
@@ -69,11 +79,11 @@ export const SelectionTaskScreen = ({ navigation }) => {
                     value={value}
                   >
                     <View style={styles.radioButtonItem}>
-                      <Text>All words</Text>
+                      <Text style={styles.textColor}>All words</Text>
                       <RadioButton value="all words" color="#4fc87a" />
                     </View>
                     <View style={styles.radioButtonItem}>
-                      <Text>Mistakes</Text>
+                      <Text style={styles.textColor}>Mistakes</Text>
                       <RadioButton value="mistakes" color="#4fc87a" />
                     </View>
                   </RadioButton.Group>
@@ -84,31 +94,32 @@ export const SelectionTaskScreen = ({ navigation }) => {
                   >
                     <View style={styles.radioButtonItem}>
                       <RadioButton value="translate words" color="#4fc87a" />
-                      <Text>Translate words</Text>
+                      <Text style={styles.textColor}>Translate words</Text>
                     </View>
                     <View style={styles.radioButtonItem}>
                       <RadioButton value="find answer" color="#4fc87a" />
-                      <Text>Find answer</Text>
+                      <Text style={styles.textColor}>Find answer</Text>
                     </View>
                     <View style={styles.radioButtonItem}>
                       <RadioButton value="random selection" color="#4fc87a" />
-                      <Text>Random selection</Text>
+                      <Text style={styles.textColor}>Random selection</Text>
                     </View>
                   </RadioButton.Group>
                 </View>
 
                 {value === 'all words' ? (
                   <View style={styles.dropDownContainer}>
-                    <DropDown
-                      label={'Choose the number of words to practice'}
+                    <Dropdown
+                      placeholder={'Choose the number of words to practice'}
+                      options={countList}
+                      hideMenuHeader={true}
                       mode={'outlined'}
-                      visible={showMultiSelectDropDown}
-                      showDropDown={() => setShowMultiSelectDropDown(true)}
-                      onDismiss={() => setShowMultiSelectDropDown(false)}
                       value={wordCount}
-                      setValue={setWordCount}
-                      list={countList}
-                      activeColor="#4fc87a"
+                      onSelect={setWordCount}
+                      textInputStyle={{
+                        backgroundColor: '#fff',
+                        color: '#000',
+                      }}
                     />
                   </View>
                 ) : (
@@ -156,7 +167,7 @@ export const SelectionTaskScreen = ({ navigation }) => {
                 <Text style={styles.btnText}>Start</Text>
               </TouchableOpacity>
             </View>
-          </Provider>
+          </PaperProvider>
         </>
       )}
     </>
@@ -181,6 +192,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 18,
     textAlign: 'center',
+    color: '#000',
   },
   radioButtonItem: {
     flexDirection: 'row',
@@ -188,6 +200,7 @@ const styles = StyleSheet.create({
   },
   dropDownContainer: {
     marginTop: 50,
+    backgroundColor: '#fff',
   },
   startBtn: {
     position: 'absolute',
@@ -203,6 +216,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  textColor: {
+    color: '#000',
+  },
   itemContainer: {
     borderWidth: 1,
     borderRadius: 8,
@@ -215,9 +231,11 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
+    color: '#000',
   },
   itemHeader: {
     fontSize: 20,
     textAlign: 'center',
+    color: '#000',
   },
 });

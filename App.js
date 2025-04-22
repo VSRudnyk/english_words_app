@@ -18,8 +18,11 @@ export default function App() {
         <NavigationContainer>
           <Tab.Navigator
             initialRouteName="VocabularyScreen"
-            activeColor="#fff"
-            barStyle={{ backgroundColor: '#4fc87a' }}
+            inactiveColor='#000'
+            activeColor="#4fc87a"
+            barStyle={{ backgroundColor: '#d5c7c7'}}
+            backBehavior='firstRoute'
+            sceneAnimationEnabled={true}
           >
             <Tab.Screen
               name="VocabularyScreen"
@@ -30,7 +33,7 @@ export default function App() {
                   <MaterialCommunityIcons
                     name="file-word-box"
                     color={color}
-                    size={26}
+                    size={30}
                   />
                 ),
               }}
@@ -44,7 +47,7 @@ export default function App() {
                   <MaterialCommunityIcons
                     name="brain"
                     color={color}
-                    size={26}
+                    size={30}
                   />
                 ),
               }}

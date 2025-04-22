@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "english-words",
+    "name": "VocApp",
     "slug": "english-words",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#4fc87a"
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
@@ -24,7 +24,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#4fc87a"
       },
       "package": "com.vsrudnyk.englishwords"
     },
@@ -38,6 +38,7 @@
     },
     "runtimeVersion": {
       "policy": "sdkVersion"
-    }
+    },
+    "owner": "vsrudnyk"
   }
 }
