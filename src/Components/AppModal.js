@@ -113,7 +113,8 @@ export const AppModal = ({
                 }))
               }
             />
-            <TouchableOpacity activeOpacity={0.8}
+            {action != 'Add' && (
+              <TouchableOpacity activeOpacity={0.8}
               onPress={() => speak(normalizeWord)}>
               <MaterialCommunityIcons
                 name="volume-high"
@@ -121,6 +122,7 @@ export const AppModal = ({
                 color="#4fc87a"
               />
             </TouchableOpacity>
+            )}           
             <TextInput
               style={action === 'Add' ? styles.input : styles.inputCard}
               textAlign={'center'}

@@ -7,11 +7,25 @@ import { RootSiblingParent } from 'react-native-root-siblings';
 import { VocabularyScreen } from './screen/mainScreen/VocabularyScreen';
 import { DefaultScreen } from './screen/mainScreen/DefaultScreen';
 import { store } from './redux/store';
+import { SplashScreenComponent } from './src/Components/SplashScreen';
+import { useState } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
 
 const Tab = createMaterialBottomTabNavigator();
 
 export default function App() {
+  const [isSplashVisible, setSplashVisible] = useState(true);
   useKeepAwake();
+
+  const handleAnimationEnd = () => {
+    setSplashVisible(false); // Скрываем Splash Screen после завершения анимации
+    SplashScreen.hideAsync(); // Скрываем системный Splash Screen
+  };
+
+  if (isSplashVisible) {
+    return <SplashScreenComponent onAnimationEnd={handleAnimationEnd} />;
+  }
+
   return (
     <Provider store={store}>
       <RootSiblingParent>
