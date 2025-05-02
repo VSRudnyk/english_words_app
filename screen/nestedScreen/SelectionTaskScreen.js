@@ -1,13 +1,12 @@
 import { StyleSheet, TouchableOpacity, View, FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Dropdown } from 'react-native-paper-dropdown';
-import { Provider as PaperProvider, RadioButton, Text, DefaultTheme } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Provider as PaperProvider, RadioButton, Text, DefaultTheme, Checkbox } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native';
 import { useGetWordsQuery } from '../../redux/wordsAPi';
 import { Loader } from '../../src/Components/Loader';
 import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
-import { useDeleteWordFromMistakesMutation } from '../../redux/wordsAPi';
+import { useDeleteWordsFromMistakesMutation } from '../../redux/wordsAPi';
 
 export const SelectionTaskScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -18,10 +17,12 @@ export const SelectionTaskScreen = ({ navigation }) => {
     isSuccess: success,
     refetch,
   } = useGetWordsWithMistakesQuery();
-  const [deleteWordFromMistaken] = useDeleteWordFromMistakesMutation();
+  const [deleteWordsFromMistakes] = useDeleteWordsFromMistakesMutation();
   const [wordCount, setWordCount] = useState(2);
   const [value, setValue] = useState('all words');
   const [practVar, setPractVar] = useState('translate words');
+  const [selectedWords, setSelectedWords] = useState([]);
+  const [visibleCheckBox, setVisibleCheckBox] = useState(false);
 
   const lightTheme = {
   ...DefaultTheme,
@@ -44,6 +45,32 @@ export const SelectionTaskScreen = ({ navigation }) => {
   }, []);
 
   if (isFetching && loading) return <Loader />;
+
+  const handleCheckBoxToggle = (word) => {
+    setSelectedWords((prevSelectedWords) => {
+      if (prevSelectedWords.includes(word)) {
+        return prevSelectedWords.filter((item) => item !== word);
+      } else {
+        return [...prevSelectedWords, word];
+      }
+    });
+  };
+
+  const handleBatchDelete = async () => {
+  try {
+    await deleteWordsFromMistakes(selectedWords); // Передаём массив идентификаторов
+    setSelectedWords([]); // Очищаем выбранные слова
+    setVisibleCheckBox(false); // Скрываем чекбоксы
+    refetch(); // Обновляем список слов
+  } catch (error) {
+    console.error('Error deleting words:', error);
+  }
+  };
+  
+  const handleCheckBoxClose = () => {
+    setVisibleCheckBox(false);
+    setSelectedWords([]); // Очищаем выбранные слова
+  };
 
   const allWordsLength = words.data.length;
 
@@ -135,37 +162,57 @@ export const SelectionTaskScreen = ({ navigation }) => {
                       }}
                       data={wordsWithMistakes}
                       keyExtractor={(item) => item._id}
-                      renderItem={({ item }) => (
-                        <View style={styles.itemContainer}>
-                          <Text style={styles.itemText}>{item.word}</Text>
+                        renderItem={({ item }) => (
                           <TouchableOpacity
                             activeOpacity={0.8}
-                            onPress={() => deleteWordFromMistaken(item._id)}
+                            onLongPress={() => setVisibleCheckBox(true)} // Долгое нажатие
+                           
                           >
-                            <MaterialCommunityIcons
-                              name="close-circle"
-                              size={24}
-                              color="#ff8a7a"
-                            />
+                            <View style={styles.itemContainer}>
+                              <Text style={styles.itemText}>{item.word}</Text>
+                              {visibleCheckBox &&
+                                <Checkbox
+                                  status={selectedWords.includes(item._id) ? 'checked' : 'unchecked'}
+                                  onPress={() => handleCheckBoxToggle(item._id)}
+                                  color="#4fc87a" // Цвет фона чекбокса
+                                />}
+                            </View>                            
                           </TouchableOpacity>
-                        </View>
                       )}
                     />
                   </>
                 )}
               </View>
-              <TouchableOpacity
-                style={styles.startBtn}
-                onPress={() =>
-                  navigation.navigate('Practice', {
-                    wordCount,
-                    value,
-                    practVar,
-                  })
-                }
-              >
-                <Text style={styles.btnText}>Start</Text>
-              </TouchableOpacity>
+              <View style={styles.buttonContainer}>
+                {visibleCheckBox ?
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      style={styles.closeBtn}
+                      onPress={handleCheckBoxClose}
+                    >
+                      <Text style={styles.btnText}>Close</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.deleteBtn}
+                      onPress={handleBatchDelete}
+                      disabled={selectedWords.length === 0} // Блокируем кнопку, если ничего не выбрано
+                    >
+                      <Text style={styles.btnText}>Delete Selected</Text>
+                    </TouchableOpacity>
+                  </View> :                 
+                  <TouchableOpacity
+                  style={styles.startBtn}
+                  onPress={() =>
+                    navigation.navigate('Practice', {
+                      wordCount,
+                      value,
+                      practVar,
+                    })
+                  }
+                >
+                  <Text style={styles.btnText}>Start</Text>
+                </TouchableOpacity>}
+              </View>
             </View>
           </PaperProvider>
         </>
@@ -202,10 +249,35 @@ const styles = StyleSheet.create({
     marginTop: 50,
     backgroundColor: '#fff',
   },
-  startBtn: {
+  buttonContainer: {
     position: 'absolute',
     bottom: 10,
-    width: '100%',
+    width: '100%', // Контейнер занимает всю ширину родителя
+    flexDirection: 'row', // Размещаем кнопки в строку
+    justifyContent: 'space-between', // Равномерное распределение кнопок
+    alignItems: 'center', // Выравнивание кнопок по центру
+    // paddingHorizontal: 10, // Отступы внутри контейнера
+  },
+  startBtn: {
+    flex: 1, // Кнопка занимает равное пространство
+    padding: 18,
+    borderRadius: 8,
+    backgroundColor: '#4fc87a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 5, // Отступ между кнопками
+  },
+  deleteBtn: {
+    flex: 1, // Кнопка занимает равное пространство
+    padding: 18,
+    borderRadius: 8,
+    backgroundColor: '#ff8a7a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 5, // Отступ между кнопками
+  },
+  closeBtn: {
+    flex: 1, // Кнопка занимает равное пространство
     padding: 18,
     borderRadius: 8,
     backgroundColor: '#4fc87a',
@@ -220,6 +292,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   itemContainer: {
+    height: 55,
     borderWidth: 1,
     borderRadius: 8,
     borderColor: '#BDBDBD',
@@ -228,6 +301,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   itemText: {
     fontSize: 16,
@@ -237,5 +311,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     color: '#000',
+    marginTop: 15,
   },
 });

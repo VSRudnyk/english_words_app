@@ -26,10 +26,11 @@ export const wordsAPI = createApi({
       }),
       invalidatesTags: ['Words'],
     }),
-    deleteWordFromMistakes: builder.mutation({
-      query: (wordId) => ({
-        url: `/words/mistakes/${wordId}`,
+    deleteWordsFromMistakes: builder.mutation({
+      query: (wordsIds) => ({
+        url: `/words/mistakes/del`,
         method: 'DELETE',
+        body: { ids: wordsIds },
       }),
       invalidatesTags: ['Words'],
     }),
@@ -72,5 +73,5 @@ export const {
   useAddWordMutation,
   useAddWordWithMistakesMutation,
   useUpdateWordMutation,
-  useDeleteWordFromMistakesMutation,
+  useDeleteWordsFromMistakesMutation,
 } = wordsAPI;
