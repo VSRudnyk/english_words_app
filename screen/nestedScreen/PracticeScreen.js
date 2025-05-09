@@ -9,7 +9,6 @@ import { ResultPage } from '../../src/Components/resultPage';
 import { Loader } from '../../src/Components/Loader';
 import { useAddWordWithMistakesMutation } from '../../redux/wordsAPi';
 import { useGetWordsWithMistakesQuery } from '../../redux/wordsAPi';
-import { AlertModal } from '../../src/Components/Alert';
 
 export const PracticeScreen = ({ route, navigation }) => {
   const { wordCount, value, practVar } = route.params;

@@ -64,10 +64,10 @@ export const SelectionTaskScreen = ({ navigation }) => {
 
   const handleBatchDelete = async () => {
     try {
-      await deleteWordsFromMistakes(selectedWords); // Передаём массив идентификаторов
-      setSelectedWords([]); // Очищаем выбранные слова
-      setVisibleCheckBox(false); // Скрываем чекбоксы
-      refetch(); // Обновляем список слов
+      await deleteWordsFromMistakes(selectedWords);
+      setSelectedWords([]);
+      setVisibleCheckBox(false);
+      refetch();
     } catch (error) {
       console.error('Error deleting words:', error);
     }
@@ -75,7 +75,7 @@ export const SelectionTaskScreen = ({ navigation }) => {
 
   const handleCheckBoxClose = () => {
     setVisibleCheckBox(false);
-    setSelectedWords([]); // Очищаем выбранные слова
+    setSelectedWords([]);
   };
 
   const allWordsLength = words.data.length;

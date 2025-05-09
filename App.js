@@ -4,11 +4,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Provider } from 'react-redux';
 import { RootSiblingParent } from 'react-native-root-siblings';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { MainScreen } from './screen/mainScreen/MainScreen';
 import { DefaultScreen } from './screen/mainScreen/DefaultScreen';
 import { store } from './redux/store';
-import { useState } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
@@ -27,8 +26,8 @@ export default function App() {
                   paddingTop: 10,
                   backgroundColor: '#4fc87a',
                 },
-                tabBarActiveTintColor: '#0E9CE6', // Цвет активной вкладки
-                tabBarInactiveTintColor: '#ffffff', // Цвет неактивной вкладки
+                tabBarActiveTintColor: '#0E9CE6',
+                tabBarInactiveTintColor: '#ffffff',
                 animation: 'shift',
                 headerShown: false,
               }}

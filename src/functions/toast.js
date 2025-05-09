@@ -4,7 +4,7 @@ export const tostify = (text, bgColor, textColor) => {
   return Toast.show(text, {
     delay: 1000,
     duration: 5000,
-    position: Toast.positions.CENTER,
+    position: Toast.positions.TOP,
     backgroundColor: bgColor,
     textColor: textColor,
     shadow: true,

@@ -17,8 +17,8 @@ export const AnswerInput = ({
           ...styles.input,
           borderColor: inputColor('#dadada'),
           color: inputColor('#111'),
-          // width:
-          //   chekAnswer === 'Ok' || chekAnswer === 'Mistake' ? '100%' : '88%',
+          paddingRight:
+            chekAnswer === 'Ok' || chekAnswer === 'Mistake' ? 10 : 60,
         }}
         textAlign={'center'}
         selectTextOnFocus={disabled}
@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     maxHeight: 100,
-    paddingRight: 60,
     paddingLeft: 10,
     paddingVertical: 10,
     borderWidth: 2,

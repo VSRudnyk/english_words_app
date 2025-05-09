@@ -14,7 +14,6 @@ import { useGetWordsQuery } from '../../redux/wordsAPi';
 import { NoDataFound } from '../../src/Components/NoDataFound';
 import { Loader } from '../../src/Components/Loader';
 import { AppModal } from '../../src/Components/AppModal';
-// import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const initialState = {
   word: '',
@@ -29,7 +28,6 @@ export const VocabularyScreen = () => {
   const [action, setAction] = useState('');
   const [filter, setFilter] = useState('');
 
-  // const insets = useSafeAreaInsets();
   const words = data?.data;
 
   const openModal = (text, item) => {

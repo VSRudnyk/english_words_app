@@ -4,7 +4,6 @@ export const wordsAPI = createApi({
   reducerPath: 'wordsApi',
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://words-backend-eight.vercel.app/api',
-    // baseUrl: 'http://localhost:3000/api',
   }),
   tagTypes: ['Words'],
   endpoints: (builder) => ({
