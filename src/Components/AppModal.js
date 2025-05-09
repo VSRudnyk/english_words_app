@@ -82,7 +82,7 @@ export const AppModal = ({
   return (
     <View>
       <Modal
-        animationType="fade"
+        animationType='fade'
         transparent={true}
         onRequestClose={() => {
           closeModal();
@@ -114,15 +114,17 @@ export const AppModal = ({
               }
             />
             {action != 'Add' && (
-              <TouchableOpacity activeOpacity={0.8}
-              onPress={() => speak(normalizeWord)}>
-              <MaterialCommunityIcons
-                name="volume-high"
-                size={24}
-                color="#4fc87a"
-              />
-            </TouchableOpacity>
-            )}           
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => speak(normalizeWord)}
+              >
+                <MaterialCommunityIcons
+                  name='volume-high'
+                  size={32}
+                  color='#ffffff'
+                />
+              </TouchableOpacity>
+            )}
             <TextInput
               style={action === 'Add' ? styles.input : styles.inputCard}
               textAlign={'center'}
@@ -148,7 +150,7 @@ export const AppModal = ({
                   : { width: '100%' }
               }
             >
-              <Text style={{ fontSize: 14 }}>Synonyms:</Text>
+              <Text style={{ fontSize: 14, color: 'white' }}>Synonyms:</Text>
               <TextInput
                 style={action === 'Add' ? styles.input : styles.inputCard}
                 textAlign={'left'}
@@ -187,7 +189,7 @@ export const AppModal = ({
                   activeOpacity={0.8}
                   onPress={deleteCurrentWord}
                 >
-                  <Text style={styles.submitBtnText}>Delete</Text>
+                  <Text style={styles.btnTextDel}>Delete</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -198,9 +200,9 @@ export const AppModal = ({
               onPress={() => closeModal()}
             >
               <MaterialCommunityIcons
-                name="close-circle"
+                name='close-circle'
                 size={24}
-                color="#4fc87a"
+                color='#ffffff'
               />
             </TouchableOpacity>
           </View>
@@ -224,7 +226,7 @@ const styles = StyleSheet.create({
   modalView: {
     width: '90%',
     margin: 50,
-    backgroundColor: 'white',
+    backgroundColor: '#4fc87a',
     borderRadius: 8,
     padding: 35,
     alignItems: 'center',
@@ -241,17 +243,24 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: '#E8E8E8',
     marginBottom: 20,
+    marginTop: 10,
     borderWidth: 1,
+    backgroundColor: '#ffffff',
   },
   inputCard: {
     fontSize: 18,
     textAlign: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    marginTop: 10,
+    padding: 10,
+    width: '100%',
   },
   submitBtn: {
     flex: 1,
     padding: 18,
     borderRadius: 8,
-    backgroundColor: '#4fc87a',
+    backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
     width: btnWidth,
@@ -259,6 +268,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 15 / 2,
   },
   submitBtnText: {
-    color: '#fff',
+    color: '#4fc87a',
+  },
+  btnTextDel: {
+    color: '#ffffff',
   },
 });

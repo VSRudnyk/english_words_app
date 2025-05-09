@@ -35,7 +35,7 @@ export const ResultPage = ({
               borderWidth={0}
               thickness={10}
               strokeCap={'round'}
-              color={'#56aaf9'}
+              color={'#0E9CE6'}
               unfilledColor={'#cce6fd'}
             />
           </View>
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   },
   completed: {
     fontSize: 20,
-    color: '#56aaf9',
+    color: '#0E9CE6',
   },
   btn: {
     padding: 18,
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   result: {
-    color: '#56aaf9',
+    color: '#0E9CE6',
     fontSize: 20,
   },
   mistakeContainer: {

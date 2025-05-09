@@ -17,8 +17,8 @@ export const AnswerInput = ({
           ...styles.input,
           borderColor: inputColor('#dadada'),
           color: inputColor('#111'),
-          width:
-            chekAnswer === 'Ok' || chekAnswer === 'Mistake' ? '100%' : '88%',
+          // width:
+          //   chekAnswer === 'Ok' || chekAnswer === 'Mistake' ? '100%' : '88%',
         }}
         textAlign={'center'}
         selectTextOnFocus={disabled}
@@ -37,15 +37,17 @@ export const AnswerInput = ({
         style={{
           display:
             chekAnswer === 'Ok' || chekAnswer === 'Mistake' ? 'none' : 'flex',
+          position: 'absolute',
+          right: 5,
         }}
         activeOpacity={0.8}
         onPress={checkBtn}
         disabled={answer.length < 1}
       >
         <MaterialCommunityIcons
-          name="arrow-right-box"
+          name='arrow-right-box'
           size={50}
-          color="#4fc87a"
+          color='#4fc87a'
         />
       </TouchableOpacity>
     </View>
@@ -54,6 +56,7 @@ export const AnswerInput = ({
 
 const styles = StyleSheet.create({
   inputContainer: {
+    position: 'relative',
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -61,10 +64,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   input: {
-    height: 40,
+    width: '100%',
     maxHeight: 100,
-    padding: 10,
-    margin: 'auto',
+    paddingRight: 60,
+    paddingLeft: 10,
+    paddingVertical: 10,
     borderWidth: 2,
     borderRadius: 6,
     fontSize: 20,

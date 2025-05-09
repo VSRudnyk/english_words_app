@@ -1,10 +1,9 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { SelectionTaskScreen } from '../nestedScreen/SelectionTaskScreen';
-import { PracticeScreen } from '../nestedScreen/PracticeScreen';
+import { VocabularyScreen } from '../nestedScreen/VocabularyScreen';
 
 const NestedScreen = createStackNavigator();
 
-export const DefaultScreen = () => {
+export const MainScreen = () => {
   return (
     <NestedScreen.Navigator
       screenOptions={{
@@ -19,13 +18,12 @@ export const DefaultScreen = () => {
       }}
     >
       <NestedScreen.Screen
-        name='SelectionTaskScreen'
-        component={SelectionTaskScreen}
+        name='Vocabulary'
+        component={VocabularyScreen}
         options={{
-          title: 'Task selection',
+          title: 'Vocabulary',
         }}
       />
-      <NestedScreen.Screen name='Practice' component={PracticeScreen} />
     </NestedScreen.Navigator>
   );
 };

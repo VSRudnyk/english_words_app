@@ -1,7 +1,13 @@
 import { StyleSheet, TouchableOpacity, View, FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Dropdown } from 'react-native-paper-dropdown';
-import { Provider as PaperProvider, RadioButton, Text, DefaultTheme, Checkbox } from 'react-native-paper';
+import {
+  Provider as PaperProvider,
+  RadioButton,
+  Text,
+  DefaultTheme,
+  Checkbox,
+} from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native';
 import { useGetWordsQuery } from '../../redux/wordsAPi';
 import { Loader } from '../../src/Components/Loader';
@@ -25,16 +31,16 @@ export const SelectionTaskScreen = ({ navigation }) => {
   const [visibleCheckBox, setVisibleCheckBox] = useState(false);
 
   const lightTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: '#ffffff', // Белый фон
-    surface: '#ffffff',    // Белый фон для компонентов
-    text: '#000000',       // Чёрный текст
-    primary: '#4fc87a',    // Основной цвет
-    accent: '#4fc87a',     // Акцентный цвет
-  },
-};
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: '#ffffff', // Белый фон
+      surface: '#ffffff', // Белый фон для компонентов
+      text: '#000000', // Чёрный текст
+      primary: '#4fc87a', // Основной цвет
+      accent: '#4fc87a', // Акцентный цвет
+    },
+  };
 
   const wordsWithMistakes = data?.data;
 
@@ -57,16 +63,16 @@ export const SelectionTaskScreen = ({ navigation }) => {
   };
 
   const handleBatchDelete = async () => {
-  try {
-    await deleteWordsFromMistakes(selectedWords); // Передаём массив идентификаторов
-    setSelectedWords([]); // Очищаем выбранные слова
-    setVisibleCheckBox(false); // Скрываем чекбоксы
-    refetch(); // Обновляем список слов
-  } catch (error) {
-    console.error('Error deleting words:', error);
-  }
+    try {
+      await deleteWordsFromMistakes(selectedWords); // Передаём массив идентификаторов
+      setSelectedWords([]); // Очищаем выбранные слова
+      setVisibleCheckBox(false); // Скрываем чекбоксы
+      refetch(); // Обновляем список слов
+    } catch (error) {
+      console.error('Error deleting words:', error);
+    }
   };
-  
+
   const handleCheckBoxClose = () => {
     setVisibleCheckBox(false);
     setSelectedWords([]); // Очищаем выбранные слова
@@ -107,11 +113,11 @@ export const SelectionTaskScreen = ({ navigation }) => {
                   >
                     <View style={styles.radioButtonItem}>
                       <Text style={styles.textColor}>All words</Text>
-                      <RadioButton value="all words" color="#4fc87a" />
+                      <RadioButton value='all words' color='#4fc87a' />
                     </View>
                     <View style={styles.radioButtonItem}>
                       <Text style={styles.textColor}>Mistakes</Text>
-                      <RadioButton value="mistakes" color="#4fc87a" />
+                      <RadioButton value='mistakes' color='#4fc87a' />
                     </View>
                   </RadioButton.Group>
 
@@ -120,15 +126,15 @@ export const SelectionTaskScreen = ({ navigation }) => {
                     value={practVar}
                   >
                     <View style={styles.radioButtonItem}>
-                      <RadioButton value="translate words" color="#4fc87a" />
+                      <RadioButton value='translate words' color='#4fc87a' />
                       <Text style={styles.textColor}>Translate words</Text>
                     </View>
                     <View style={styles.radioButtonItem}>
-                      <RadioButton value="find answer" color="#4fc87a" />
+                      <RadioButton value='find answer' color='#4fc87a' />
                       <Text style={styles.textColor}>Find answer</Text>
                     </View>
                     <View style={styles.radioButtonItem}>
-                      <RadioButton value="random selection" color="#4fc87a" />
+                      <RadioButton value='random selection' color='#4fc87a' />
                       <Text style={styles.textColor}>Random selection</Text>
                     </View>
                   </RadioButton.Group>
@@ -150,41 +156,44 @@ export const SelectionTaskScreen = ({ navigation }) => {
                     />
                   </View>
                 ) : (
-                  <>
+                  <View style={styles.mistakesContainer}>
                     <Text style={styles.itemHeader}>
                       Common mistakes - {wordsWithMistakes.length}
                     </Text>
                     <FlatList
-                      style={{
-                        width: '100%',
-                        height: '65%',
-                        marginTop: 10,
-                      }}
+                      showsVerticalScrollIndicator={false}
                       data={wordsWithMistakes}
                       keyExtractor={(item) => item._id}
-                        renderItem={({ item }) => (
-                          <TouchableOpacity
-                            activeOpacity={0.8}
-                            onLongPress={() => setVisibleCheckBox(true)} // Долгое нажатие
-                           
-                          >
-                            <View style={styles.itemContainer}>
-                              <Text style={styles.itemText}>{item.word}</Text>
-                              {visibleCheckBox &&
-                                <Checkbox
-                                  status={selectedWords.includes(item._id) ? 'checked' : 'unchecked'}
-                                  onPress={() => handleCheckBoxToggle(item._id)}
-                                  color="#4fc87a" // Цвет фона чекбокса
-                                />}
-                            </View>                            
-                          </TouchableOpacity>
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          activeOpacity={0.8}
+                          onLongPress={() => setVisibleCheckBox(true)} // Долгое нажатие
+                        >
+                          <View style={styles.itemContainer}>
+                            <Text style={styles.itemText}>{item.word}</Text>
+                            <Text style={styles.itemText}>
+                              {item.translation}
+                            </Text>
+                            {visibleCheckBox && (
+                              <Checkbox
+                                status={
+                                  selectedWords.includes(item._id)
+                                    ? 'checked'
+                                    : 'unchecked'
+                                }
+                                onPress={() => handleCheckBoxToggle(item._id)}
+                                color='#4fc87a' // Цвет фона чекбокса
+                              />
+                            )}
+                          </View>
+                        </TouchableOpacity>
                       )}
                     />
-                  </>
+                  </View>
                 )}
               </View>
               <View style={styles.buttonContainer}>
-                {visibleCheckBox ?
+                {visibleCheckBox && value === 'mistakes' ? (
                   <View style={styles.buttonContainer}>
                     <TouchableOpacity
                       style={styles.closeBtn}
@@ -199,19 +208,21 @@ export const SelectionTaskScreen = ({ navigation }) => {
                     >
                       <Text style={styles.btnText}>Delete Selected</Text>
                     </TouchableOpacity>
-                  </View> :                 
+                  </View>
+                ) : (
                   <TouchableOpacity
-                  style={styles.startBtn}
-                  onPress={() =>
-                    navigation.navigate('Practice', {
-                      wordCount,
-                      value,
-                      practVar,
-                    })
-                  }
-                >
-                  <Text style={styles.btnText}>Start</Text>
-                </TouchableOpacity>}
+                    style={styles.startBtn}
+                    onPress={() =>
+                      navigation.navigate('Practice', {
+                        wordCount,
+                        value,
+                        practVar,
+                      })
+                    }
+                  >
+                    <Text style={styles.btnText}>Start</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </PaperProvider>
@@ -249,14 +260,15 @@ const styles = StyleSheet.create({
     marginTop: 50,
     backgroundColor: '#fff',
   },
+  mistakesContainer: {
+    height: 450,
+  },
   buttonContainer: {
-    position: 'absolute',
-    bottom: 10,
     width: '100%', // Контейнер занимает всю ширину родителя
     flexDirection: 'row', // Размещаем кнопки в строку
     justifyContent: 'space-between', // Равномерное распределение кнопок
     alignItems: 'center', // Выравнивание кнопок по центру
-    // paddingHorizontal: 10, // Отступы внутри контейнера
+    marginBottom: 10,
   },
   startBtn: {
     flex: 1, // Кнопка занимает равное пространство
@@ -265,7 +277,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#4fc87a',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 5, // Отступ между кнопками
   },
   deleteBtn: {
     flex: 1, // Кнопка занимает равное пространство
@@ -292,13 +303,14 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   itemContainer: {
-    height: 55,
+    height: 40,
     borderWidth: 1,
     borderRadius: 8,
     borderColor: '#BDBDBD',
-    padding: 8,
+    paddingLeft: 8,
+    paddingRight: 8,
     fontSize: 16,
-    marginBottom: 16,
+    marginBottom: 5,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -312,5 +324,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#000',
     marginTop: 15,
+    marginBottom: 10,
   },
 });
