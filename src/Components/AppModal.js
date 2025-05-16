@@ -8,27 +8,31 @@ import {
   Dimensions,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useMMKVStorage } from 'react-native-mmkv-storage';
+import { v4 as uuidv4 } from 'uuid';
 import { tostify } from '../functions/toast';
-import {
-  useAddWordMutation,
-  useUpdateWordMutation,
-  useDeleteWordMutation,
-} from '../../redux/wordsAPi';
+// import {
+//   useAddWordMutation,
+//   useUpdateWordMutation,
+//   useDeleteWordMutation,
+// } from '../../redux/wordsAPi';
 import { speak } from '../functions/tts';
+import { storage } from '../functions/storage';
 
 const windowWidth = Dimensions.get('window').width;
 const btnWidth = (windowWidth - 15) / 2;
 
 export const AppModal = ({
-  words,
+  // words,
   closeModal,
   action,
   newWord,
   setNewWord,
 }) => {
-  const [addWord] = useAddWordMutation();
-  const [updateWord] = useUpdateWordMutation();
-  const [deleteWord] = useDeleteWordMutation();
+  // const [addWord] = useAddWordMutation();
+  // const [updateWord] = useUpdateWordMutation();
+  // const [deleteWord] = useDeleteWordMutation();
+  const [words, setWords] = useMMKVStorage('words', storage);
 
   const normalizeWord = newWord.word.toLowerCase().trim();
   const normalizeTranslation = newWord.translation.toLowerCase().trim();
@@ -43,23 +47,30 @@ export const AppModal = ({
           return;
         }
       }
-      addWord({
+      const newWord = {
+        id: uuidv4(),
         word: normalizeWord,
         translation: normalizeTranslation,
         synonyms: normalizeSynonyms,
-      });
+      };
+      setWords([...words, newWord]);
       tostify(
         `The word "${normalizeWord}" was added successfully`,
         '#4fc87a',
         '#fff'
       );
     } else if (action === 'Update') {
-      updateWord({
-        id: newWord._id,
-        word: normalizeWord,
-        translation: normalizeTranslation,
-        synonyms: normalizeSynonyms,
-      });
+      const updatedWord = words.map((word) =>
+        word.id === newWord.id
+          ? {
+              ...word,
+              word: normalizeWord,
+              translation: normalizeTranslation,
+              synonyms: normalizeSynonyms,
+            }
+          : word
+      );
+      setWords(updatedWord);
       tostify(
         `The word "${normalizeWord}" was updated successfully`,
         '#4fc87a',
@@ -70,7 +81,7 @@ export const AppModal = ({
   };
 
   const deleteCurrentWord = () => {
-    deleteWord(newWord._id);
+    setWords(words.filter((word) => word.id !== newWord.id));
     closeModal();
     tostify(
       `The word "${normalizeWord}" was deleted successfully`,

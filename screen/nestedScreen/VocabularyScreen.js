@@ -9,26 +9,29 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { isEmpty } from 'lodash';
+import { useMMKVStorage } from 'react-native-mmkv-storage';
 import { ucFirst } from '../../src/functions/ucFirst';
-import { useGetWordsQuery } from '../../redux/wordsAPi';
+// import { useGetWordsQuery } from '../../redux/wordsAPi';
 import { NoDataFound } from '../../src/Components/NoDataFound';
 import { Loader } from '../../src/Components/Loader';
 import { AppModal } from '../../src/Components/AppModal';
+import { storage } from '../../src/functions/storage';
 
-const initialState = {
-  word: '',
-  translation: '',
-  synonyms: '',
-};
+// const initialState = {
+//   word: '',
+//   translation: '',
+//   synonyms: '',
+// };
 
 export const VocabularyScreen = () => {
-  const { data, isFetching, isSuccess } = useGetWordsQuery();
+  // const { data, isFetching, isSuccess } = useGetWordsQuery();
+  const [words, setWords] = useMMKVStorage('words', storage);
   const [newWord, setNewWord] = useState(initialState);
   const [modalVisible, setModalVisible] = useState(false);
   const [action, setAction] = useState('');
   const [filter, setFilter] = useState('');
 
-  const words = data?.data;
+  // const words = data?.data;
 
   const openModal = (text, item) => {
     setAction(text);
@@ -127,7 +130,7 @@ export const VocabularyScreen = () => {
 
         {modalVisible && (
           <AppModal
-            words={words}
+            // words={words}
             newWord={newWord}
             setNewWord={setNewWord}
             action={action}
