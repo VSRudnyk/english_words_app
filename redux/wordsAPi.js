@@ -52,13 +52,21 @@ export const wordsAPI = createApi({
     }),
     updateWord: builder.mutation({
       query: ({ word, translation, synonyms, id }) => ({
-        url: `/words/${id}`,
+        url: `/words/update/${id}`,
         method: 'PUT',
         body: {
           word,
           translation,
           synonyms,
         },
+      }),
+      invalidatesTags: ['Words'],
+    }),
+    bulkUpdateWords: builder.mutation({
+      query: (wordsArr) => ({
+        url: '/words/bulk-update',
+        method: 'PUT',
+        body: wordsArr,
       }),
       invalidatesTags: ['Words'],
     }),
@@ -74,4 +82,5 @@ export const {
   useAddWordWithMistakesMutation,
   useUpdateWordMutation,
   useDeleteWordsFromMistakesMutation,
+  useBulkUpdateWordsMutation,
 } = wordsAPI;

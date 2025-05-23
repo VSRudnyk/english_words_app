@@ -82,7 +82,7 @@ export const AppModal = ({
   return (
     <View>
       <Modal
-        animationType='fade'
+        animationType="fade"
         transparent={true}
         onRequestClose={() => {
           closeModal();
@@ -119,9 +119,9 @@ export const AppModal = ({
                 onPress={() => speak(normalizeWord)}
               >
                 <MaterialCommunityIcons
-                  name='volume-high'
+                  name="volume-high"
                   size={32}
-                  color='#ffffff'
+                  color="#ffffff"
                 />
               </TouchableOpacity>
             )}
@@ -200,9 +200,9 @@ export const AppModal = ({
               onPress={() => closeModal()}
             >
               <MaterialCommunityIcons
-                name='close-circle'
+                name="close-circle"
                 size={24}
-                color='#ffffff'
+                color="#ffffff"
               />
             </TouchableOpacity>
           </View>

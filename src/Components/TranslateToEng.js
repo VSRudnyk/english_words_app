@@ -5,7 +5,6 @@ import { AnswerInput } from './AnswerInput';
 import { FindCorrectAnswer } from './FindCorrectAnswer';
 import { speak } from '../functions/tts';
 
-
 export const TranslateToEng = ({
   words,
   practiceVariant,
@@ -13,6 +12,7 @@ export const TranslateToEng = ({
   showResultPage,
   setNumberOfWord,
   setErrorAnswer,
+  setWordsToUpdate,
 }) => {
   const [currentWordInd, setCurrentWordInd] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -31,7 +31,9 @@ export const TranslateToEng = ({
   }, []);
 
   const currentWord = words[currentWordInd];
+
   const { word, synonyms, translation } = currentWord;
+  // let updatedWord = { ...currentWord }; // updatedWord нигде не используется
 
   const randomBoolean = () => {
     if (practiceVariant === 'translate words') {
@@ -48,6 +50,24 @@ export const TranslateToEng = ({
     }
   };
 
+  const updateWordStats = (wordObj, type = 'correct') => {
+    const updatedWord = { ...wordObj };
+    if (type === 'correct') {
+      updatedWord.correctAnswersCount =
+        (updatedWord.correctAnswersCount || 0) + 1;
+    } else {
+      updatedWord.incorectAnswersCount =
+        (updatedWord.incorectAnswersCount || 0) + 1;
+    }
+    setWordsToUpdate((prev) => {
+      const exists = prev.find((w) => w._id === updatedWord._id);
+      if (exists) {
+        return prev.map((w) => (w._id === updatedWord._id ? updatedWord : w));
+      }
+      return [...prev, updatedWord];
+    });
+  };
+
   const btnAction = () => {
     if (btnText === "Don't know") {
       setNumberOfWord((prew) => prew + 1);
@@ -55,6 +75,7 @@ export const TranslateToEng = ({
       setCorrectAnswer(true);
       setCheckAnswer('Mistake');
       setDisabled(true);
+      updateWordStats(currentWord, 'incorrect');
     } else if (btnText === 'Next') {
       if (currentWordInd >= words.length - 1) {
         showResultPage(words.length);
@@ -74,16 +95,20 @@ export const TranslateToEng = ({
     if (answer.toLowerCase().trim() === word || x === word) {
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
+      updateWordStats(currentWord, 'correct');
     } else if (
       visibleComponent &&
       synonyms.includes(answer.toLowerCase().trim())
     ) {
       setCheckAnswer('Ok');
       setResult((prew) => prew + 1);
+      updateWordStats(currentWord, 'correct');
     } else {
       setCheckAnswer('Mistake');
       setErrorAnswer((prew) => [...prew, currentWord]);
+      updateWordStats(currentWord, 'incorrect');
     }
+
     setNumberOfWord((prew) => prew + 1);
     setBtnText('Next');
     setDisabled(true);
@@ -120,8 +145,7 @@ export const TranslateToEng = ({
             <Text style={styles.wordInEng}>
               {visibleComponent ? word : translation}
             </Text>
-            <TouchableOpacity activeOpacity={0.8}
-              onPress={() => speak(word)}>
+            <TouchableOpacity activeOpacity={0.8} onPress={() => speak(word)}>
               <MaterialCommunityIcons
                 name="volume-high"
                 size={24}
