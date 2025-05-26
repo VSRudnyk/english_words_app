@@ -33,7 +33,6 @@ export const TranslateToEng = ({
   const currentWord = words[currentWordInd];
 
   const { word, synonyms, translation } = currentWord;
-  // let updatedWord = { ...currentWord }; // updatedWord нигде не используется
 
   const randomBoolean = () => {
     if (practiceVariant === 'translate words') {

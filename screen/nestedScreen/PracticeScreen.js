@@ -5,6 +5,7 @@ import { ProgressBar } from '../../src/Components/ProgressBar';
 import { NoDataFound } from '../../src/Components/NoDataFound';
 import { TranslateToEng } from '../../src/Components/TranslateToEng';
 import { ResultPage } from '../../src/Components/resultPage';
+import { WordScramble } from '../../src/Components/WordScramble';
 import { Loader } from '../../src/Components/Loader';
 import {
   useBulkUpdateWordsMutation,
@@ -141,15 +142,26 @@ export const PracticeScreen = ({ route, navigation }) => {
         numberOfWord={numberOfWord}
         numberOfAllWord={practiceWords.length} // количество слов для практики
       />
-      <TranslateToEng
-        words={practiceWords} // массив слов для практики
-        practiceVariant={practVar}
-        setResult={setResult}
-        showResultPage={showResultPage}
-        setNumberOfWord={setNumberOfWord}
-        setErrorAnswer={setErrorAnswer}
-        setWordsToUpdate={setWordsToUpdate}
-      />
+      {practVar === 'word scramble' ? (
+        <WordScramble
+          words={practiceWords}
+          setResult={setResult}
+          showResultPage={showResultPage}
+          setNumberOfWord={setNumberOfWord}
+          setErrorAnswer={setErrorAnswer}
+          setWordsToUpdate={setWordsToUpdate}
+        />
+      ) : (
+        <TranslateToEng
+          words={practiceWords}
+          practiceVariant={practVar}
+          setResult={setResult}
+          showResultPage={showResultPage}
+          setNumberOfWord={setNumberOfWord}
+          setErrorAnswer={setErrorAnswer}
+          setWordsToUpdate={setWordsToUpdate}
+        />
+      )}
     </View>
   );
 };

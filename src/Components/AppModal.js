@@ -88,7 +88,7 @@ export const AppModal = ({
           closeModal();
         }}
       >
-        <View style={styles.centeredView}>
+        <View style={styles.centeredView} z>
           <View style={styles.modalView}>
             <TextInput
               style={

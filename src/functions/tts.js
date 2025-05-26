@@ -1,23 +1,15 @@
-import Tts from 'react-native-tts';
+import * as Speech from 'expo-speech';
 import { tostify } from './toast';
 
 export const speak = (text) => {
-    try {
-        Tts.setDefaultLanguage('en-US');
-        Tts.setDefaultRate(0.5);
-        Tts.speak(text, {
-        androidParams: {
-        KEY_PARAM_PAN: 0,
-        KEY_PARAM_VOLUME: 1,
-        KEY_PARAM_STREAM: 'STREAM_MUSIC',
-    },
-  });
-    } catch (error) {
-        tostify(
-            'Error: ' + error.message,
-            '#ff8a7a',
-            '#fff'
-        );
-    }
- 
-}
+  try {
+    Speech.speak(text, {
+      language: 'en-GB',
+      pitch: 1,
+      rate: 1,
+      volume: 1,
+    });
+  } catch (error) {
+    tostify('Error: ' + error.message, '#ff8a7a', '#fff');
+  }
+};
