@@ -28,20 +28,26 @@ export const SelectionTaskScreen = ({ navigation }) => {
             value={practVar}
           >
             <View style={styles.radioButtonItem}>
-              <RadioButton value="translate words" color="#4fc87a" />
-              <Text style={styles.textColor}>Translate words</Text>
-            </View>
-            <View style={styles.radioButtonItem}>
-              <RadioButton value="find answer" color="#4fc87a" />
-              <Text style={styles.textColor}>Find answer</Text>
-            </View>
-            <View style={styles.radioButtonItem}>
-              <RadioButton value="word scramble" color="#4fc87a" />
-              <Text style={styles.textColor}>Word Scramble</Text>
-            </View>
-            <View style={styles.radioButtonItem}>
-              <RadioButton value="random selection" color="#4fc87a" />
-              <Text style={styles.textColor}>Random selection</Text>
+              <RadioButton.Item
+                label="Translate words"
+                value="translate words"
+                color="#4fc87a"
+              />
+              <RadioButton.Item
+                label="Find answer"
+                value="find answer"
+                color="#4fc87a"
+              />
+              <RadioButton.Item
+                label="Word scramble"
+                value="word scramble"
+                color="#4fc87a"
+              />
+              <RadioButton.Item
+                label="Random selection"
+                value="random selection"
+                color="#4fc87a"
+              />
             </View>
           </RadioButton.Group>
         </View>
@@ -88,11 +94,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#4fc87a',
   },
-  radioButtonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
+  radioButtonGroup: {},
   radioButtonHeader: {
     marginBottom: 10,
     fontSize: 18,
@@ -100,10 +102,7 @@ const styles = StyleSheet.create({
     color: '#000',
     paddingTop: 10,
   },
-  radioButtonItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  radioButtonItem: {},
   dropDownContainer: {
     marginTop: 20,
     outlineWidth: 1,

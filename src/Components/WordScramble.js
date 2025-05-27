@@ -3,6 +3,21 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { speak } from '../functions/tts';
 
+const shuffleLetters = (letters) => {
+  if (letters.length <= 1) return letters;
+
+  // Исходное слово для сравнения
+  const originalWord = [...letters];
+  let shuffled = [...letters];
+
+  // Перемешиваем пока порядок букв не будет отличаться от оригинала
+  while (shuffled.join('') === originalWord.join('')) {
+    shuffled.sort(() => Math.random() - 0.5);
+  }
+
+  return shuffled;
+};
+
 export const WordScramble = ({
   words,
   setResult,
@@ -21,17 +36,23 @@ export const WordScramble = ({
   const { word, translation } = currentWord;
 
   useEffect(() => {
-    // Разбиваем слово на части по пробелам и дефисам
-    const wordParts = word.toLowerCase().split(/[\s-]+/);
-    // Убираем пустые строки если они есть
-    const cleanParts = wordParts.filter((part) => part.length > 0);
-    // Получаем массив букв для каждой части
-    const letters = cleanParts.map((part) => part.split('')).flat();
+    // При изменении words сбрасываем индекс
+    if (words.length > 0) {
+      const currentWord = words[currentWordInd];
+      // Разбиваем слово на части по пробелам и дефисам
+      const wordParts = currentWord.word.toLowerCase().split(/\s+/);
+      // Убираем пустые строки если они есть
+      const cleanParts = wordParts.filter((part) => part.length > 0);
+      // Получаем массив букв для каждой части
+      const letters = cleanParts.map((part) => part.split('')).flat();
 
-    setScrambledLetters(letters.sort(() => Math.random() - 0.5));
-    setUserAnswer(new Array(letters.length).fill(''));
-    setIsCorrect(null);
-  }, [currentWordInd]);
+      // Используем новую функцию вместо простой сортировки
+      setScrambledLetters(shuffleLetters(letters));
+      setUserAnswer(new Array(letters.length).fill(''));
+      setIsCorrect(null);
+      setDisabled(false);
+    }
+  }, [words, currentWordInd]);
 
   const updateWordStats = (wordObj, type = 'correct') => {
     const updatedWord = { ...wordObj };
@@ -81,7 +102,6 @@ export const WordScramble = ({
     }
   };
 
-  // Добавить новую функцию для обработки нажатия на заполненную букву
   const handleFilledLetterPress = (letter, index) => {
     if (disabled) return;
 
@@ -111,6 +131,10 @@ export const WordScramble = ({
     } else {
       setCurrentWordInd((prev) => prev + 1);
       setDisabled(false);
+      // Сбрасываем состояние
+      setIsCorrect(null);
+      setUserAnswer([]);
+      setScrambledLetters([]); // Очищаем массив букв
     }
     setNumberOfWord((prev) => prev + 1);
   };
@@ -134,12 +158,33 @@ export const WordScramble = ({
             borderColor: colorAnswer('#dadada'),
           }}
         >
-          <Text style={styles.translationText}>{translation}</Text>
-
-          <View style={styles.lettersContainer}>
+          <Text
+            style={{
+              marginBottom: disabled ? 0 : 30,
+              fontSize: disabled ? 30 : 24,
+              fontWeight: disabled ? 'bold' : 'normal',
+            }}
+          >
+            {disabled ? word : translation}
+          </Text>
+          {disabled && (
+            <TouchableOpacity
+              style={styles.speakButton}
+              onPress={() => speak(word)}
+            >
+              <MaterialCommunityIcons
+                name="volume-high"
+                size={24}
+                color="#4fc87a"
+              />
+            </TouchableOpacity>
+          )}
+          <View
+            style={[styles.lettersContainer, { marginTop: disabled ? 10 : 0 }]}
+          >
             {word
               .toLowerCase()
-              .split(/[\s-]+/)
+              .split(/\s+/)
               .map((part, partIndex, parts) => (
                 <View key={partIndex} style={styles.wordPart}>
                   {userAnswer
@@ -179,29 +224,23 @@ export const WordScramble = ({
                             color: isCorrect && '#ffffff',
                           }}
                         >
-                          {isCorrect === false
-                            ? word.toLowerCase().split(/[\s-]+/)[partIndex][
-                                index
-                              ]
-                            : letter}
+                          {letter}
                         </Text>
                       </TouchableOpacity>
                     ))}
                 </View>
               ))}
           </View>
-
           {disabled && (
-            <TouchableOpacity
-              style={styles.speakButton}
-              onPress={() => speak(word)}
+            <Text
+              style={{
+                marginTop: 10,
+                fontSize: 24,
+                fontWeight: 'normal',
+              }}
             >
-              <MaterialCommunityIcons
-                name="volume-high"
-                size={24}
-                color="#4fc87a"
-              />
-            </TouchableOpacity>
+              {disabled ? translation : word}
+            </Text>
           )}
         </View>
         <View style={styles.scrambledContainer}>
@@ -241,11 +280,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 6,
     marginBottom: 20,
-    height: 250,
-  },
-  translationText: {
-    fontSize: 24,
-    marginBottom: 30,
+    minHeight: 250,
   },
   lettersContainer: {
     flexDirection: 'column',

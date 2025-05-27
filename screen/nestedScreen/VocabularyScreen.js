@@ -27,6 +27,8 @@ const sortOptions = [
   { label: 'Recent', value: 'recent' },
   { label: 'Correct', value: 'correct' },
   { label: 'Incorrect', value: 'incorrect' },
+  { label: 'Low progress', value: 'low-progress' },
+  { label: 'High progress', value: 'high-progress' },
   { label: 'Ascending', value: 'ascending' },
   { label: 'Descending', value: 'descending' },
 ];
@@ -92,6 +94,38 @@ export const VocabularyScreen = () => {
           const bPercent = bTotal ? (b.incorectAnswersCount || 0) / bTotal : 0;
           return bPercent - aPercent; // по убыванию процента ошибок
         });
+      case 'low-progress':
+        return [...visibleWords].sort((a, b) => {
+          const aTotal =
+            (a.correctAnswersCount || 0) + (a.incorectAnswersCount || 0);
+          const bTotal =
+            (b.correctAnswersCount || 0) + (b.incorectAnswersCount || 0);
+
+          if (aTotal === 0) return -1;
+          if (bTotal === 0) return 1;
+
+          const aProgress = (a.correctAnswersCount || 0) / aTotal;
+          const bProgress = (b.correctAnswersCount || 0) / bTotal;
+
+          return aProgress - bProgress;
+        });
+
+      case 'high-progress':
+        return [...visibleWords].sort((a, b) => {
+          const aTotal =
+            (a.correctAnswersCount || 0) + (a.incorectAnswersCount || 0);
+          const bTotal =
+            (b.correctAnswersCount || 0) + (b.incorectAnswersCount || 0);
+
+          if (aTotal === 0) return 1;
+          if (bTotal === 0) return -1;
+
+          const aProgress = (a.correctAnswersCount || 0) / aTotal;
+          const bProgress = (b.correctAnswersCount || 0) / bTotal;
+
+          return bProgress - aProgress;
+        });
+
       case 'ascending':
         return [...visibleWords].sort((a, b) => a.word.localeCompare(b.word));
       case 'descending':
@@ -142,16 +176,18 @@ export const VocabularyScreen = () => {
                       onPress={() => openModal('Update', item)}
                       activeOpacity={0.8}
                     >
-                      <LinearGradient
-                        colors={[
-                          'rgba(255,138,122,0.5)',
-                          'rgba(79, 200, 122, 0.5)',
-                        ]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        locations={[percentIncorrect, percentIncorrect]}
-                        style={StyleSheet.absoluteFill}
-                      />
+                      {total > 0 && (
+                        <LinearGradient
+                          colors={[
+                            'rgba(255,138,122,0.5)',
+                            'rgba(79, 200, 122, 0.5)',
+                          ]}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 0 }}
+                          locations={[percentIncorrect, percentIncorrect]}
+                          style={StyleSheet.absoluteFill}
+                        />
+                      )}
                       <Text style={styles.itemText}>{ucFirst(item.word)}</Text>
                       <Text style={styles.itemText}>
                         {ucFirst(item.translation)}
@@ -243,6 +279,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     margin: 8,
     borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#4fc87a',
   },
   itemText: {
     fontSize: 16,

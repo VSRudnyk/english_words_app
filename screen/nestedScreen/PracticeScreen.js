@@ -23,7 +23,7 @@ export const PracticeScreen = ({ route, navigation }) => {
   const [wordsToUpdate, setWordsToUpdate] = useState([]);
   const [practiceWords, setPracticeWords] = useState([]);
 
-  const { data, isFetching, isLoading } = useGetWordsQuery();
+  const { data, isFetching, isLoading, refetch } = useGetWordsQuery();
   const words = data?.data;
 
   const [bulkUpdateWords, { isLoading: isUpdating }] =
