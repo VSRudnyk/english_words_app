@@ -3,8 +3,17 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const wordsAPI = createApi({
   reducerPath: 'wordsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://words-backend-eight.vercel.app/api',
+    // baseUrl: 'https://words-backend-eight.vercel.app/api',
+    baseUrl: 'http://localhost:3000/api',
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().auth.token;
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
+
   tagTypes: ['Words'],
   endpoints: (builder) => ({
     getWords: builder.query({
@@ -26,9 +35,9 @@ export const wordsAPI = createApi({
       }),
       invalidatesTags: ['Words'],
     }),
-    deleteWordsFromMistakes: builder.mutation({
+    deleteWords: builder.mutation({
       query: (wordsIds) => ({
-        url: `/words/mistakes/del`,
+        url: `/words/bulk-delete`,
         method: 'DELETE',
         body: { ids: wordsIds },
       }),
@@ -81,6 +90,6 @@ export const {
   useAddWordMutation,
   useAddWordWithMistakesMutation,
   useUpdateWordMutation,
-  useDeleteWordsFromMistakesMutation,
+  useDeleteWordsMutation,
   useBulkUpdateWordsMutation,
 } = wordsAPI;

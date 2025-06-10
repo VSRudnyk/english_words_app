@@ -1,16 +1,16 @@
 import { StyleSheet, View } from 'react-native';
 import { useState, useEffect } from 'react';
 import { isEmpty } from 'lodash';
+import { TouchableOpacity } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ProgressBar } from '../../src/Components/ProgressBar';
 import { NoDataFound } from '../../src/Components/NoDataFound';
 import { TranslateToEng } from '../../src/Components/TranslateToEng';
 import { ResultPage } from '../../src/Components/resultPage';
 import { WordScramble } from '../../src/Components/WordScramble';
 import { Loader } from '../../src/Components/Loader';
-import {
-  useBulkUpdateWordsMutation,
-  useGetWordsQuery,
-} from '../../redux/wordsAPi';
+// import { useBulkUpdateWordsMutation, useGetWordsQuery } from '../../redux/';
+import { useWords } from '../../src/hooks/useWords';
 
 export const PracticeScreen = ({ route, navigation }) => {
   const { wordCount, practVar } = route.params;
@@ -23,11 +23,37 @@ export const PracticeScreen = ({ route, navigation }) => {
   const [wordsToUpdate, setWordsToUpdate] = useState([]);
   const [practiceWords, setPracticeWords] = useState([]);
 
-  const { data, isFetching, isLoading, refetch } = useGetWordsQuery();
-  const words = data?.data;
+  // const { data, isFetching, isLoading, refetch } = useGetWordsQuery();
+  // const words = data?.data;
+  const { words, isLoading, readWords, updateWordStats } = useWords();
 
-  const [bulkUpdateWords, { isLoading: isUpdating }] =
-    useBulkUpdateWordsMutation();
+  useEffect(() => {
+    readWords();
+  }, []);
+
+  useEffect(() => {
+    setPracticeWords(selectPracticeWords(words, wordCount));
+  }, [words, wordCount]);
+
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     headerLeft: () => null, // Убираем стандартную кнопку назад
+  //     headerLeft: () => (
+  //       <TouchableOpacity
+  //         onPress={async () => {
+  //           await resetPage();
+  //           navigation.navigate('SelectionTaskScreen');
+  //         }}
+  //         style={{ marginLeft: 10 }}
+  //       >
+  //         <MaterialIcons name="arrow-back" size={24} color="#fff" />
+  //       </TouchableOpacity>
+  //     ),
+  //   });
+  // }, [navigation, wordsToUpdate]);
+
+  // const [bulkUpdateWords, { isLoading: isUpdating }] =
+  //   useBulkUpdateWordsMutation();
 
   const selectPracticeWords = () => {
     if (!Array.isArray(words)) return [];
@@ -54,27 +80,61 @@ export const PracticeScreen = ({ route, navigation }) => {
           })
           .slice(0, 20);
       case 'random10lowprogress':
-        return [...words]
+        const unpracticedWords10 = words.filter(
+          (word) =>
+            (!word.correctAnswersCount || word.correctAnswersCount === 0) &&
+            (!word.incorectAnswersCount || word.incorectAnswersCount === 0)
+        );
+
+        if (unpracticedWords10.length >= 10) {
+          return [...unpracticedWords10]
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 10);
+        }
+
+        const practicedWords10 = words
+          .filter(
+            (word) =>
+              word.correctAnswersCount > 0 || word.incorectAnswersCount > 0
+          )
           .sort(
             (a, b) =>
               (a.correctAnswersCount || 0) +
               (a.incorectAnswersCount || 0) -
               ((b.correctAnswersCount || 0) + (b.incorectAnswersCount || 0))
-          )
-          .slice(0, words.length)
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 10);
+          );
+
+        return [...unpracticedWords10, ...practicedWords10]
+          .slice(0, 10)
+          .sort(() => Math.random() - 0.5);
       case 'random20lowprogress':
-        return [...words]
+        const unpracticedWords20 = words.filter(
+          (word) =>
+            (!word.correctAnswersCount || word.correctAnswersCount === 0) &&
+            (!word.incorectAnswersCount || word.incorectAnswersCount === 0)
+        );
+
+        if (unpracticedWords20.length >= 20) {
+          return [...unpracticedWords20]
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 20);
+        }
+
+        const practicedWords20 = words
+          .filter(
+            (word) =>
+              word.correctAnswersCount > 0 || word.incorectAnswersCount > 0
+          )
           .sort(
             (a, b) =>
               (a.correctAnswersCount || 0) +
               (a.incorectAnswersCount || 0) -
               ((b.correctAnswersCount || 0) + (b.incorectAnswersCount || 0))
-          )
-          .slice(0, words.length)
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 20);
+          );
+
+        return [...unpracticedWords20, ...practicedWords20]
+          .slice(0, 20)
+          .sort(() => Math.random() - 0.5);
       default:
         if (!isNaN(Number(wordCount))) {
           return [...words]
@@ -87,14 +147,10 @@ export const PracticeScreen = ({ route, navigation }) => {
     }
   };
 
-  useEffect(() => {
-    setPracticeWords(selectPracticeWords(words, wordCount));
-  }, [words, wordCount]);
-
   const resetPage = async () => {
     if (!isEmpty(wordsToUpdate)) {
       try {
-        await bulkUpdateWords(wordsToUpdate).unwrap();
+        await updateWordStats(wordsToUpdate);
       } catch (error) {
         console.error('Error updating words:', error);
       }
@@ -121,7 +177,7 @@ export const PracticeScreen = ({ route, navigation }) => {
     setTotalWords(max);
   };
 
-  if (isLoading || isFetching || isUpdating) return <Loader />;
+  if (isLoading) return <Loader />;
 
   if (isEmpty(practiceWords)) return <NoDataFound />;
 

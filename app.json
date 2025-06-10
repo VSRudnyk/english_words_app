@@ -39,6 +39,9 @@
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
-    "owner": "vsrudnyk"
+    "owner": "vsrudnyk",
+    "plugins": [
+      "expo-web-browser"
+    ]
   }
 }

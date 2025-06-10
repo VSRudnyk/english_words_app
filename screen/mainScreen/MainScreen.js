@@ -1,9 +1,102 @@
+import { BackHandler, Alert, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { VocabularyScreen } from '../nestedScreen/VocabularyScreen';
+import {
+  useBulkUpdateWordsMutation,
+  useDeleteWordsMutation,
+} from '../../redux/wordsAPi';
+import { useWords } from '../../src/hooks/useWords';
+import { useAuth } from '../../src/hooks/useAuth';
+import { Loader } from '../../src/Components/Loader';
 
 const NestedScreen = createStackNavigator();
 
 export const MainScreen = () => {
+  const {
+    isLoading,
+    readWords,
+    writeWords,
+    clearDeletedWords,
+    readDeletedWords,
+    clearAllStorage,
+  } = useWords();
+  const { clearAuthStorage } = useAuth();
+
+  const [bulkUpdateWords, { isLoading: isUpdating }] =
+    useBulkUpdateWordsMutation();
+  const [deleteWords, { isLoading: isDeleting }] = useDeleteWordsMutation();
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    return () => backHandler.remove();
+  }, []);
+
+  const backAction = async () => {
+    const words = await readWords();
+    const pendingWords = words.filter((word) => word.pendingSync === true);
+    const deletedWords = await readDeletedWords();
+    if (pendingWords?.length > 0) {
+      try {
+        await bulkUpdateWords(pendingWords).unwrap();
+        // // Update local words after successful sync
+        const updatedWords = words.map((word) => {
+          if (pendingWords.some((pw) => pw.id === word.id)) {
+            return { ...word, pendingSync: false };
+          }
+          return word;
+        });
+
+        await writeWords(updatedWords); // Add writeWords to useWords hook deps
+        await readWords(); // Refresh local words
+      } catch (error) {
+        console.error('Error syncing words:', error);
+      }
+    } else if (deletedWords?.length > 0) {
+      try {
+        await deleteWords(deletedWords).unwrap();
+        // Update local words after successful deletion
+        const updatedWords = words.filter(
+          (word) => !deletedWords.some((dw) => dw.id === word.id)
+        );
+        await writeWords(updatedWords);
+        await clearDeletedWords(); // Clear deleted words storage
+        await readWords();
+      } catch (error) {
+        console.error('Error deleting words:', error);
+      }
+    }
+
+    Alert.alert('Exit App', 'Are you sure you want to exit?', [
+      {
+        text: 'Cancel',
+        onPress: () => null,
+        style: 'cancel',
+      },
+      {
+        text: 'YES',
+        onPress: () => BackHandler.exitApp(),
+      },
+    ]);
+    return true;
+  };
+
+  const clearStorage = async () => {
+    try {
+      await Promise.all([clearAuthStorage(), clearAllStorage()]);
+      Alert.alert('Storage Cleared', 'All data has been cleared successfully.');
+    } catch (error) {
+      console.error('Error clearing storage:', error);
+      Alert.alert('Error', 'Failed to clear storage.');
+    }
+  };
+
+  if (isLoading || isUpdating || isDeleting) return <Loader />;
+
   return (
     <NestedScreen.Navigator
       screenOptions={{
@@ -15,14 +108,31 @@ export const MainScreen = () => {
           borderBottomStartRadius: 20,
         },
         headerTitleAlign: 'center',
+        headerRight: () => (
+          <>
+            <TouchableOpacity
+              onPress={clearStorage}
+              style={{ marginRight: 15 }}
+            >
+              <MaterialCommunityIcons name="delete" size={24} color="#ffffff" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={backAction} style={{ marginRight: 15 }}>
+              <MaterialCommunityIcons
+                name="exit-to-app"
+                size={24}
+                color="#ffffff"
+              />
+            </TouchableOpacity>
+          </>
+        ),
       }}
     >
       <NestedScreen.Screen
-        name='Vocabulary'
-        component={VocabularyScreen}
+        name="Vocabulary"
         options={{
           title: 'Vocabulary',
         }}
+        component={VocabularyScreen}
       />
     </NestedScreen.Navigator>
   );

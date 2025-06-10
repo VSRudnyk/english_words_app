@@ -64,9 +64,9 @@ export const WordScramble = ({
         (updatedWord.incorectAnswersCount || 0) + 1;
     }
     setWordsToUpdate((prev) => {
-      const exists = prev.find((w) => w._id === updatedWord._id);
+      const exists = prev.find((w) => w.id === updatedWord.id);
       if (exists) {
-        return prev.map((w) => (w._id === updatedWord._id ? updatedWord : w));
+        return prev.map((w) => (w.id === updatedWord.id ? updatedWord : w));
       }
       return [...prev, updatedWord];
     });

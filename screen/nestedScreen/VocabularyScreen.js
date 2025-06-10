@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { isEmpty, over, set } from 'lodash';
+import { isEmpty } from 'lodash';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ucFirst } from '../../src/functions/ucFirst';
-import { useGetWordsQuery } from '../../redux/wordsAPi';
+import { useWords } from '../../src/hooks/useWords';
 import { NoDataFound } from '../../src/Components/NoDataFound';
 import { Loader } from '../../src/Components/Loader';
 import { AppModal } from '../../src/Components/AppModal';
@@ -34,14 +35,22 @@ const sortOptions = [
 ];
 
 export const VocabularyScreen = () => {
-  const { data, isFetching, isSuccess } = useGetWordsQuery();
+  const { words, readWords, isLoading } = useWords();
   const [newWord, setNewWord] = useState(initialState);
   const [modalVisible, setModalVisible] = useState(false);
-  const [action, setAction] = useState('');
+  const [action, setAction] = useState('Add');
   const [filter, setFilter] = useState('');
   const [sortBy, setSortBy] = useState('recent');
 
-  const words = data?.data;
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     readWords();
+  //   }, [])
+  // );
+
+  useEffect(() => {
+    readWords();
+  }, [modalVisible]); // [modalVisible]
 
   const openModal = (text, item) => {
     setAction(text);
@@ -58,13 +67,12 @@ export const VocabularyScreen = () => {
 
   const getVisibleWords = () => {
     const normalizedFilter = filter.toLowerCase();
-    if (isSuccess) {
-      return words?.filter(
-        ({ word, translation }) =>
-          word.toLowerCase().includes(normalizedFilter) ||
-          translation.toLowerCase().includes(normalizedFilter)
-      );
-    }
+    if (!Array.isArray(words)) return [];
+    return words.filter(
+      ({ word, translation }) =>
+        word?.toLowerCase().includes(normalizedFilter) ||
+        translation?.toLowerCase().includes(normalizedFilter)
+    );
   };
   const visibleWords = getVisibleWords();
 
@@ -134,7 +142,7 @@ export const VocabularyScreen = () => {
         return visibleWords;
     }
   };
-  if (isFetching) return <Loader />;
+  if (isLoading) return <Loader />;
 
   return (
     <>
@@ -159,7 +167,7 @@ export const VocabularyScreen = () => {
               style={{ width: '100%' }}
               showsVerticalScrollIndicator={false}
               data={sortwords(sortBy)}
-              keyExtractor={(item) => item._id}
+              keyExtractor={(item) => item.id}
               renderItem={({ item }) => {
                 const correct = item.correctAnswersCount || 0;
                 const incorrect = item.incorectAnswersCount || 0;
@@ -201,7 +209,7 @@ export const VocabularyScreen = () => {
         )}
         {modalVisible && (
           <AppModal
-            words={words}
+            // words={words}
             newWord={newWord}
             setNewWord={setNewWord}
             action={action}

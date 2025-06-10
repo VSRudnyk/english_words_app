@@ -4,13 +4,15 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "npx expo start --localhost",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
     "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-community/netinfo": "^11.4.1",
+    "@react-native-google-signin/google-signin": "^14.0.1",
     "@react-native-picker/picker": "2.11.0",
     "@react-navigation/bottom-tabs": "^7.3.12",
     "@react-navigation/elements": "^2.4.1",
@@ -18,12 +20,17 @@
     "@react-navigation/stack": "^7.3.1",
     "@reduxjs/toolkit": "^2.7.0",
     "expo": "^53.0.8",
+    "expo-auth-session": "~6.1.5",
     "expo-keep-awake": "~14.1.4",
     "expo-linear-gradient": "~14.1.4",
     "expo-modules-core": "~2.3.12",
+    "expo-random": "^14.0.1",
+    "expo-speech": "~13.1.7",
     "expo-splash-screen": "~0.30.8",
     "expo-status-bar": "~2.2.3",
-    "expo-updates": "~0.28.12",
+    "expo-updates": "^0.28.13",
+    "expo-web-browser": "~14.1.6",
+    "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "rc-progress": "^4.0.0",
     "react": "^19.0.0",
@@ -40,10 +47,12 @@
     "react-native-screens": "4.10.0",
     "react-native-svg": "15.11.2",
     "react-native-tts": "^4.1.1",
+    "react-native-uuid": "^2.0.3",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.20.0",
     "react-redux": "^9.2.0",
-    "expo-speech": "~13.1.7"
+    "redux-logger": "^3.0.6",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1"

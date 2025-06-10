@@ -2,17 +2,24 @@ import { useState, useEffect } from 'react';
 import { StyleSheet, FlatList, View } from 'react-native';
 import { sampleSize, shuffle } from 'lodash';
 import { RenderItem } from './RenderItem';
-import { useGetWordsQuery } from '../../redux/wordsAPi';
+// import { useGetWordsQuery } from '../../redux/wordsAPi';
+import { useWords } from '../hooks/useWords';
+import { Loader } from './Loader';
 
 export const FindCorrectAnswer = ({
   currentWord,
   chekChosenAnswer,
   disabled,
 }) => {
-  const { data } = useGetWordsQuery();
-  const words = data?.data;
+  // const { data } = useGetWordsQuery();
+  // const words = data?.data;
 
   const [suggestedWords, setSuggestedWords] = useState();
+  const { words, readWords, isLoading } = useWords();
+
+  useEffect(() => {
+    readWords();
+  }, []);
 
   useEffect(() => {
     createAndShuffle();
@@ -25,11 +32,13 @@ export const FindCorrectAnswer = ({
     setSuggestedWords(shuffle(randomArr));
   };
 
+  if (isLoading) return <Loader />;
+
   return (
     <View style={styles.listContainer}>
       <FlatList
         data={suggestedWords}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <RenderItem
             item={item}

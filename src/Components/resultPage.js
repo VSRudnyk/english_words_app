@@ -50,7 +50,7 @@ export const ResultPage = ({
             <FlatList
               style={{ width: '100%' }}
               data={errorAnswer}
-              keyExtractor={(item) => item._id}
+              keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <View style={styles.mistakeWordContainer}>
                   <Text style={styles.itemText}>{ucFirst(item.word)}</Text>
