@@ -3,8 +3,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const authAPI = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    // baseUrl: 'https://words-backend-eight.vercel.app/api',
-    baseUrl: 'http://localhost:3000/api',
+    baseUrl: 'https://words-backend-eight.vercel.app/api',
+    // baseUrl: 'http://localhost:3000/api',
     prepareHeaders: (headers, { getState, endpoint }) => {
       const authState = getState().auth;
 

@@ -15,10 +15,15 @@ export const authSlice = createSlice({
     builder.addMatcher(
       authAPI.endpoints.register.matchFulfilled,
       (state, { payload }) => {
-        state.user = payload.user;
-        state._id = payload.user._id;
-        state.token = payload.user.token;
-        state.isLoggedIn = true;
+        if (payload.message == 'User already exists') {
+          state.user = payload.user;
+          state._id = payload.user._id;
+          state.token = payload.user.token;
+        } else {
+          state.user = { ...payload };
+          state._id = payload._id;
+          state.token = payload.token;
+        }
       }
     );
   },

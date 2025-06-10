@@ -42,11 +42,11 @@ export const VocabularyScreen = () => {
   const [filter, setFilter] = useState('');
   const [sortBy, setSortBy] = useState('recent');
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     readWords();
-  //   }, [])
-  // );
+  useFocusEffect(
+    useCallback(() => {
+      readWords();
+    }, [])
+  );
 
   useEffect(() => {
     readWords();

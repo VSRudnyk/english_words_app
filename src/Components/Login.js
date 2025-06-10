@@ -38,6 +38,7 @@ export const Login = ({ setIsAuth }) => {
       };
 
       const userObject = await register(newUser).unwrap();
+      console.log('User registered:', userObject);
       const { user, words } = userObject;
 
       if (words) {
