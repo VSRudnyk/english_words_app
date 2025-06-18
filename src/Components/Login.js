@@ -5,6 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
 } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import { useWords } from '../hooks/useWords';
@@ -38,7 +42,6 @@ export const Login = ({ setIsAuth }) => {
       };
 
       const userObject = await register(newUser).unwrap();
-      console.log('User registered:', userObject);
       const { user, words } = userObject;
 
       if (words) {
@@ -56,45 +59,50 @@ export const Login = ({ setIsAuth }) => {
       }
       setIsAuth(true);
     } catch (error) {
-      console.error('Registration failed:', error);
-      tostify(`User with ${userData.email} already exist`, '#ff8a7a', '#fff');
+      console.log('Registration failed:', error.data.message);
+      tostify(error.data.message, '#ff8a7a', '#fff');
     }
   };
 
   if (isLoading || isUpdating) return <Loader />;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.loginContainer}>
-        <Text style={styles.title}>Welcome to VocApp</Text>
-        <TextInput
-          style={styles.loginInput}
-          placeholder={'Email'}
-          placeholderTextColor={'#BDBDBD'}
-          selectionColor={'#4fc87a'}
-          value={userData.email}
-          onChangeText={(value) => handleChange('email', value)}
-        />
-        <TextInput
-          style={styles.loginInput}
-          placeholder={'Password'}
-          placeholderTextColor={'#BDBDBD'}
-          selectionColor={'#4fc87a'}
-          value={userData.password}
-          onChangeText={(value) => handleChange('password', value)}
-        />
-        <TouchableOpacity
-          style={styles.submitBtn}
-          activeOpacity={0.8}
-          onPress={handleSubmit}
-          disabled={isLoading}
-        >
-          <Text style={styles.submitBtnText}>
-            {isLoading ? 'Loading...' : 'Log in'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
+        <View style={styles.container}>
+          <View style={styles.loginContainer}>
+            <Text style={styles.title}>Welcome to VocApp</Text>
+            <TextInput
+              style={styles.loginInput}
+              placeholder={'Email'}
+              placeholderTextColor={'#BDBDBD'}
+              selectionColor={'#4fc87a'}
+              value={userData.email}
+              onChangeText={(value) => handleChange('email', value)}
+            />
+            <TextInput
+              style={styles.loginInput}
+              secureTextEntry={true}
+              placeholder={'Password'}
+              placeholderTextColor={'#BDBDBD'}
+              selectionColor={'#4fc87a'}
+              value={userData.password}
+              onChangeText={(value) => handleChange('password', value)}
+            />
+            <TouchableOpacity
+              style={styles.submitBtn}
+              activeOpacity={0.8}
+              onPress={handleSubmit}
+              disabled={isLoading}
+            >
+              <Text style={styles.submitBtnText}>
+                {isLoading ? 'Loading...' : 'Log in'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 

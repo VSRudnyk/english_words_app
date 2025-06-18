@@ -11,11 +11,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import uuid from 'react-native-uuid';
 import { useState, useEffect } from 'react';
 import { tostify } from '../functions/toast';
-// import {
-//   useAddWordMutation,
-//   useUpdateWordMutation,
-//   useDeleteWordMutation,
-// } from '../../redux/wordsAPi';
 import { speak } from '../functions/tts';
 import { useWords } from '../hooks/useWords';
 import { useAuth } from '../hooks/useAuth';
@@ -23,19 +18,11 @@ import { useAuth } from '../hooks/useAuth';
 const windowWidth = Dimensions.get('window').width;
 const btnWidth = (windowWidth - 15) / 2;
 
-export const AppModal = ({
-  // words,
-  closeModal,
-  action,
-  newWord,
-  setNewWord,
-}) => {
+export const AppModal = ({ closeModal, action, newWord, setNewWord }) => {
   const [userId, setUserId] = useState(null);
   const { words, addWord, updateWord, deleteWord, writeDeletedWordId } =
     useWords();
   const { getUserId } = useAuth();
-  // const [updateWord] = useUpdateWordMutation();
-  // const [deleteWord] = useDeleteWordMutation();
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -52,7 +39,6 @@ export const AppModal = ({
 
   const handleSubmit = async () => {
     if (action === 'Add') {
-      // Проверка на дубликаты
       for (const word of words) {
         if (word.translation === normalizeTranslation) {
           tostify('This word is already in the vocabulary', '#ff8a7a', '#fff');
@@ -110,12 +96,9 @@ export const AppModal = ({
 
   const deleteCurrentWord = async () => {
     try {
-      // First, add word ID to deletedWords array in storage
       if (!newWord.pendingSync) {
         await writeDeletedWordId(newWord.id);
       }
-
-      // Then delete from local storage
       const success = await deleteWord(newWord.id);
       if (success) {
         tostify(

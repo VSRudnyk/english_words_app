@@ -1,15 +1,12 @@
 import { StyleSheet, View } from 'react-native';
 import { useState, useEffect } from 'react';
 import { isEmpty } from 'lodash';
-import { TouchableOpacity } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ProgressBar } from '../../src/Components/ProgressBar';
 import { NoDataFound } from '../../src/Components/NoDataFound';
 import { TranslateToEng } from '../../src/Components/TranslateToEng';
 import { ResultPage } from '../../src/Components/resultPage';
 import { WordScramble } from '../../src/Components/WordScramble';
 import { Loader } from '../../src/Components/Loader';
-// import { useBulkUpdateWordsMutation, useGetWordsQuery } from '../../redux/';
 import { useWords } from '../../src/hooks/useWords';
 
 export const PracticeScreen = ({ route, navigation }) => {
@@ -23,8 +20,6 @@ export const PracticeScreen = ({ route, navigation }) => {
   const [wordsToUpdate, setWordsToUpdate] = useState([]);
   const [practiceWords, setPracticeWords] = useState([]);
 
-  // const { data, isFetching, isLoading, refetch } = useGetWordsQuery();
-  // const words = data?.data;
   const { words, isLoading, readWords, updateWordStats } = useWords();
 
   useEffect(() => {
@@ -34,26 +29,6 @@ export const PracticeScreen = ({ route, navigation }) => {
   useEffect(() => {
     setPracticeWords(selectPracticeWords(words, wordCount));
   }, [words, wordCount]);
-
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     headerLeft: () => null, // Убираем стандартную кнопку назад
-  //     headerLeft: () => (
-  //       <TouchableOpacity
-  //         onPress={async () => {
-  //           await resetPage();
-  //           navigation.navigate('SelectionTaskScreen');
-  //         }}
-  //         style={{ marginLeft: 10 }}
-  //       >
-  //         <MaterialIcons name="arrow-back" size={24} color="#fff" />
-  //       </TouchableOpacity>
-  //     ),
-  //   });
-  // }, [navigation, wordsToUpdate]);
-
-  // const [bulkUpdateWords, { isLoading: isUpdating }] =
-  //   useBulkUpdateWordsMutation();
 
   const selectPracticeWords = () => {
     if (!Array.isArray(words)) return [];
@@ -196,7 +171,7 @@ export const PracticeScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <ProgressBar
         numberOfWord={numberOfWord}
-        numberOfAllWord={practiceWords.length} // количество слов для практики
+        numberOfAllWord={practiceWords.length}
       />
       {practVar === 'word scramble' ? (
         <WordScramble

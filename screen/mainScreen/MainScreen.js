@@ -13,7 +13,7 @@ import { Loader } from '../../src/Components/Loader';
 
 const NestedScreen = createStackNavigator();
 
-export const MainScreen = () => {
+export const MainScreen = ({ hasInternet }) => {
   const {
     isLoading,
     readWords,
@@ -37,53 +37,52 @@ export const MainScreen = () => {
   }, []);
 
   const backAction = async () => {
-    const words = await readWords();
-    const pendingWords = words.filter((word) => word.pendingSync === true);
-    console.log('Pending words:', pendingWords);
-    const deletedWords = await readDeletedWords();
-    console.log('Deleted words:', deletedWords);
+    if (hasInternet) {
+      const words = await readWords();
+      const pendingWords = words.filter((word) => word.pendingSync === true);
+      const deletedWords = await readDeletedWords();
 
-    try {
-      // Handle both updates and deletions if they exist
-      const promises = [];
+      try {
+        const promises = [];
 
-      if (pendingWords?.length > 0) {
-        promises.push(
-          bulkUpdateWords(pendingWords)
-            .unwrap()
-            .then(async () => {
-              const updatedWords = words.map((word) => {
-                if (pendingWords.some((pw) => pw.id === word.id)) {
-                  return { ...word, pendingSync: false };
-                }
-                return word;
-              });
-              await writeWords(updatedWords);
-            })
-        );
+        if (pendingWords?.length > 0) {
+          promises.push(
+            bulkUpdateWords(pendingWords)
+              .unwrap()
+              .then(async () => {
+                const updatedWords = words.map((word) => {
+                  if (pendingWords.some((pw) => pw.id === word.id)) {
+                    return { ...word, pendingSync: false };
+                  }
+                  return word;
+                });
+                await writeWords(updatedWords);
+              })
+          );
+        }
+
+        if (deletedWords?.length > 0) {
+          promises.push(
+            deleteWords(deletedWords)
+              .unwrap()
+              .then(async () => {
+                const updatedWords = words.filter(
+                  (word) => !deletedWords.some((dw) => dw.id === word.id)
+                );
+                await writeWords(updatedWords);
+                await clearDeletedWords();
+              })
+          );
+        }
+
+        // Wait for all operations to complete
+        if (promises.length > 0) {
+          await Promise.all(promises);
+          await readWords(); // Refresh local words after all operations
+        }
+      } catch (error) {
+        console.error('Error syncing/deleting words:', error);
       }
-
-      if (deletedWords?.length > 0) {
-        promises.push(
-          deleteWords(deletedWords)
-            .unwrap()
-            .then(async () => {
-              const updatedWords = words.filter(
-                (word) => !deletedWords.some((dw) => dw.id === word.id)
-              );
-              await writeWords(updatedWords);
-              await clearDeletedWords();
-            })
-        );
-      }
-
-      // Wait for all operations to complete
-      if (promises.length > 0) {
-        await Promise.all(promises);
-        await readWords(); // Refresh local words after all operations
-      }
-    } catch (error) {
-      console.error('Error syncing/deleting words:', error);
     }
 
     Alert.alert('Exit App', 'Are you sure you want to exit?', [

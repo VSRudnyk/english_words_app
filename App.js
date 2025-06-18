@@ -1,20 +1,21 @@
 import { useKeepAwake } from 'expo-keep-awake';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Provider } from 'react-redux';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import NetInfo from '@react-native-community/netinfo';
+import { useEffect, useState } from 'react';
+import { has, isEmpty } from 'lodash';
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { MainScreen } from './screen/mainScreen/MainScreen';
 import { DefaultScreen } from './screen/mainScreen/DefaultScreen';
 import { store } from './redux/store';
-import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
-import { createStackNavigator } from '@react-navigation/stack';
 import { AuthScreen } from './screen/mainScreen/AuthScreen';
 import { useAuth } from './src/hooks/useAuth';
 import { Loader } from './src/Components/Loader';
-import { useEffect, useState } from 'react';
-import { isEmpty } from 'lodash';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -41,7 +42,7 @@ const AuthNavigator = ({ setIsAuth }) => {
   );
 };
 
-const TabNavigator = () => {
+const TabNavigator = ({ hasInternet }) => {
   return (
     <Tab.Navigator
       backBehavior="firstRoute"
@@ -59,7 +60,6 @@ const TabNavigator = () => {
     >
       <Tab.Screen
         name="MainScreen"
-        component={MainScreen}
         options={{
           tabBarLabel: 'Words',
           tabBarIcon: ({ color }) => (
@@ -70,7 +70,9 @@ const TabNavigator = () => {
             />
           ),
         }}
-      />
+      >
+        {(props) => <MainScreen {...props} hasInternet={hasInternet} />}
+      </Tab.Screen>
       <Tab.Screen
         name="DefaultScreen"
         component={DefaultScreen}
@@ -88,6 +90,7 @@ const TabNavigator = () => {
 const RootNavigator = () => {
   const { readUser, isLoading } = useAuth();
   const [isAuth, setIsAuth] = useState(false);
+  const [hasInternet, setHasInternet] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -97,16 +100,24 @@ const RootNavigator = () => {
     checkAuth();
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setHasInternet(state.isConnected);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   if (isLoading) return <Loader />;
 
   return (
     <Stack.Navigator>
-      {isAuth ? (
-        <Stack.Screen
-          name="Main"
-          component={TabNavigator}
-          options={{ headerShown: false }}
-        />
+      {isAuth || !hasInternet ? (
+        <Stack.Screen name="Main" options={{ headerShown: false }}>
+          {(props) => <TabNavigator {...props} hasInternet={hasInternet} />}
+        </Stack.Screen>
       ) : (
         <Stack.Screen name="Auth" options={{ headerShown: false }}>
           {(props) => <AuthNavigator {...props} setIsAuth={setIsAuth} />}
